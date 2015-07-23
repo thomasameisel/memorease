@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/lib/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MemoreaListActivityFragment">
+
+    <RelativeLayout
+        android:id="@+id/relative_layout_no_memoreas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/text_view_nothing_to_memorize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/button_add_memorea"
+            android:layout_centerHorizontal="true"
+            android:text="@string/nothing_to_memorize"
+            android:textSize="26sp"/>
+        <Button
+            android:id="@+id/button_add_memorea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/add"
+            android:onClick="addMemorea"/>
+    </RelativeLayout>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/button_fab_add_memorea"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add"
+            android:layout_gravity="bottom|end"
+            android:onClick="addMemorea"
+            android:padding="16dp"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:layout_anchor="@id/coordinator_layout"
+            app:layout_gravity="bottom|right|end"/>
+    </android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:onClick="showCardInfo">
+
+    <android.support.v7.widget.CardView xmlns:card="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_memorea"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        card:cardCornerRadius="2dp">
+
+        <RelativeLayout
+            android:id="@+id/relative_layout_memorea_card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/text_view_memorea_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+            <TextView
+                android:id="@+id/text_view_next_memorization_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/next_memorization_in"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+            <TextView
+                android:id="@+id/text_view_next_memorization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_view_next_memorization_label"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>
