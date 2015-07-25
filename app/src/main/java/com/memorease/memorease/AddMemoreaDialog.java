@@ -37,8 +37,12 @@ public class AddMemoreaDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View addView = inflater.inflate(R.layout.fragment_add_memorea, null);
+        if (getArguments() != null && getArguments().getStringArray("edit_memorea_info") != null) {
+            setEditTextFields(addView, getArguments().getStringArray("edit_memorea_info"));
+        }
 
-        builder.setView(inflater.inflate(R.layout.fragment_add_memorea, null))
+        builder.setView(addView)
                 // Add action buttons
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
@@ -54,7 +58,15 @@ public class AddMemoreaDialog extends DialogFragment {
                 .setTitle(R.string.add_memorea_title);
         Dialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         return dialog;
+    }
+
+    private void setEditTextFields(final View view, final String[] memoreaInfo) {
+        ((EditText)view.findViewById(R.id.edit_text_title)).setText(memoreaInfo[0]);
+        ((EditText)view.findViewById(R.id.edit_text_question)).setText(memoreaInfo[1]);
+        ((EditText)view.findViewById(R.id.edit_text_answer)).setText(memoreaInfo[2]);
+        ((EditText)view.findViewById(R.id.edit_text_hint)).setText(memoreaInfo[3]);
     }
 
     private void addMemoreaCard() {

@@ -1,6 +1,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_memorea_info"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
@@ -19,43 +20,32 @@
             android:layout_height="match_parent"
             android:columnCount="2"
             android:useDefaultMargins="true"
-            android:paddingTop="35dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
+            android:paddingTop="35dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
                 android:text="Question: "/>
             <TextView
                 android:id="@+id/text_view_memorea_info_question"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
                 android:text="Answer: "/>
             <TextView
                 android:id="@+id/text_view_memorea_info_answer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
                 android:text="Hint: "/>
             <TextView
                 android:id="@+id/text_view_memorea_info_hint"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
         </GridLayout>
     </ScrollView>
     <android.support.design.widget.FloatingActionButton
@@ -63,6 +53,6 @@
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_edit"
-        android:onClick="editMemorea"/>
+        android:src="@drawable/ic_mode_edit_white_24dp"
+        android:clickable="true"/>
 </android.support.design.widget.CoordinatorLayout>

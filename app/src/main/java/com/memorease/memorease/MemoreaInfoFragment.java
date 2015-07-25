@@ -1,11 +1,14 @@
 package com.memorease.memorease;
 
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 
@@ -14,15 +17,20 @@ import android.widget.TextView;
  */
 public class MemoreaInfoFragment extends Fragment {
 
-    public MemoreaInfoFragment() {
-    }
+    public String[] memoreaInfo;
+
+    public MemoreaInfoFragment() {}
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_memorea_info, container, false);
+        memoreaInfo = getArguments().getStringArray("memorea_info");
+        setTextViews(view, memoreaInfo);
+
+        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar)view.findViewById(R.id.toolbar));
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)view.findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(memoreaInfo[0]);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getArguments().getStringArray("memorea_info")[0]);
-        View view = inflater.inflate(R.layout.fragment_memorea_info, container, false);
-        setTextViews(view, getArguments().getStringArray("memorea_info"));
         return view;
     }
 

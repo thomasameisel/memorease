@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -14,9 +15,11 @@ import android.support.v4.app.FragmentManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,13 +49,21 @@ public class MemoreaListActivity extends AppCompatActivity implements AddMemorea
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                super.onBackPressed();
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                getSupportActionBar().setTitle(R.string.app_name);
+                onBackPressed();
             default:
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setTitle(R.string.app_name);
+        }
+
+        super.onBackPressed();
     }
 
     private RecyclerView initRecyclerView() {
@@ -68,16 +79,16 @@ public class MemoreaListActivity extends AppCompatActivity implements AddMemorea
     private ItemTouchHelper.SimpleCallback createItemTouchHelperCallback() {
         return new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
                 @Override
-                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder dragged, RecyclerView.ViewHolder target) {
+                public boolean onMove(final RecyclerView recyclerView, final RecyclerView.ViewHolder dragged, final RecyclerView.ViewHolder target) {
                     memoreaListAdapter.onItemMove(dragged.getAdapterPosition(), target.getAdapterPosition());
                     return true;
                 }
 
                 @Override
-                public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                public void onSwiped(final RecyclerView.ViewHolder viewHolder, final int swipeDir) {
                     final MemoreaInfo deletedCard = memoreaListAdapter.getItem(viewHolder.getAdapterPosition());
                     final int deletedCardPosition = viewHolder.getAdapterPosition();
-                    Snackbar.make(findViewById(R.id.coordinator_layout), "Deleted the " + memoreaListAdapter.getItem(viewHolder.getAdapterPosition()).title + " memorea", Snackbar.LENGTH_LONG)
+                    Snackbar.make(findViewById(R.id.fragment_memorea_list), "Deleted the " + memoreaListAdapter.getItem(viewHolder.getAdapterPosition()).title + " memorea", Snackbar.LENGTH_LONG)
                             .setAction("Undo", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -90,10 +101,9 @@ public class MemoreaListActivity extends AppCompatActivity implements AddMemorea
                 }
 
                 @Override
-                public int getMovementFlags(RecyclerView recyclerView,
-                                            RecyclerView.ViewHolder viewHolder) {
-                    int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                    int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+                public int getMovementFlags(final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder) {
+                    final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                    final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
                     return makeMovementFlags(dragFlags, swipeFlags);
                 }
 
@@ -110,10 +120,25 @@ public class MemoreaListActivity extends AppCompatActivity implements AddMemorea
     }
 
     public void addMemorea(final View view) {
-        //dialog to add memorea
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        AddMemoreaDialog addMemoreaDialog = new AddMemoreaDialog();
-        addMemoreaDialog.show(fragmentManager, "fragment_add_memorea");
+        // dialog to add memorea
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final AddMemoreaDialog addMemoreaDialog = new AddMemoreaDialog();
+        addMemoreaDialog.show(fragmentManager, null);
+    }
+
+    public void editMemorea(final View view) {
+        // dialog to edit memorea
+        final Bundle memoreaInfo = new Bundle();
+        memoreaInfo.putStringArray("edit_memorea_info", getMemoreaInfoFromFragment(getSupportFragmentManager().findFragmentByTag("fragment_memorea_info")));
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final AddMemoreaDialog addMemoreaDialog = new AddMemoreaDialog();
+        addMemoreaDialog.setArguments(memoreaInfo);
+        addMemoreaDialog.show(fragmentManager, null);
+    }
+
+    private String[] getMemoreaInfoFromFragment(final Fragment fragment) {
+        return ((MemoreaInfoFragment)fragment).memoreaInfo;
     }
 
     @Override
@@ -124,24 +149,24 @@ public class MemoreaListActivity extends AppCompatActivity implements AddMemorea
 
     @Override
     public void onClick(final View view) {
-        int position = recyclerView.getChildAdapterPosition(view);
-        MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
+        final int position = recyclerView.getChildAdapterPosition(view);
+        final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
         // Create new fragment and transaction
-        Bundle memoreaInfo = new Bundle();
-        String[] info = new String[4];
+        final Bundle memoreaInfo = new Bundle();
+        final String[] info = new String[4];
         info[0] = memoreaInfoClicked.title;
         info[1] = memoreaInfoClicked.question;
         info[2] = memoreaInfoClicked.answer;
         info[3] = memoreaInfoClicked.hint;
         memoreaInfo.putStringArray("memorea_info", info);
 
-        Fragment newFragment = new MemoreaInfoFragment();
-        newFragment.setArguments(memoreaInfo);
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left,
-                R.anim.slide_in_left, R.anim.slide_out_right);
-        transaction.replace(R.id.fragment_memorea_list, newFragment);
+        final Fragment infoFragment = new MemoreaInfoFragment();
+        infoFragment.setArguments(memoreaInfo);
+        final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                android.R.anim.fade_in, android.R.anim.fade_out);
+        transaction.replace(R.id.fragment_memorea_list, infoFragment, "fragment_memorea_info");
         transaction.addToBackStack(null);
         transaction.commit();
     }
