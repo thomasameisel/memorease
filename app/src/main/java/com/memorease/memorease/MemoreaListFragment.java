@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -56,6 +55,11 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         return new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(final RecyclerView recyclerView, final RecyclerView.ViewHolder dragged, final RecyclerView.ViewHolder target) {
+                final int draggedPosition = dragged.getAdapterPosition();
+                final int targetPosition = target.getAdapterPosition();
+                memoreaListAdapter.getItem(draggedPosition).position = targetPosition;
+                memoreaListAdapter.getItem(targetPosition).position = draggedPosition;
+                ((MemoreaListActivity)getActivity()).updateSharedPrefOnMove(memoreaListAdapter.getItem(draggedPosition), memoreaListAdapter.getItem(targetPosition));
                 memoreaListAdapter.onItemMove(dragged.getAdapterPosition(), target.getAdapterPosition());
                 return true;
             }
@@ -68,11 +72,13 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                ((MemoreaListActivity)getActivity()).updateSharedPrefOnAdd(deletedCard);
                                 memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
                             }
                         })
                         .setActionTextColor(Color.RED)
                         .show();
+                ((MemoreaListActivity)getActivity()).updateSharedPrefOnDelete(deletedCard);
                 memoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
             }
 
@@ -100,7 +106,6 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
     }
 
     public void addMemoreaCard(final MemoreaInfo memoreaInfo) {
-        //create card using this info and add to memoreaList
         memoreaListAdapter.onItemAdd(memoreaInfo);
     }
 
@@ -110,18 +115,12 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
 
         // Create new fragment and transaction
         final String[] info = new String[5];
-        info[0] = memoreaInfoClicked.uuid.toString();
+        info[0] = memoreaInfoClicked.id.toString();
         info[1] = memoreaInfoClicked.title;
         info[2] = memoreaInfoClicked.question;
         info[3] = memoreaInfoClicked.answer;
         info[4] = memoreaInfoClicked.hint;
 
         ((MemoreaListActivity)getActivity()).openMemoreaInfoFragment(info, position);
-    }
-
-    public void updateMemorea(final String[] updatedFields, final int memoreaPosition) {
-        MemoreaInfo memoreaToUpdate = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(updatedFields[0]));
-        memoreaToUpdate.updateFields(updatedFields);
-        memoreaListAdapter.notifyItemChanged(memoreaPosition);
     }
 }

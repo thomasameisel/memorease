@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:tag="fragment_memorea_list">
+    android:background="@color/background_material_light">
 
     <include layout="@layout/toolbar"/>
     <android.support.v7.widget.RecyclerView
@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
+        android:background="@color/background_material_light"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/button_fab_add_memorea"

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:clickable="true"
     tools:context="com.memorease.memorease.MemoreaInfoFragment"
-    android:background="@color/white">
+    android:background="@color/background_material_light">
 
     <include layout="@layout/collapsing_toolbar"/>
     <ScrollView

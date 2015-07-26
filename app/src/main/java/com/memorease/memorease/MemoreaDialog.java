@@ -74,11 +74,12 @@ public class MemoreaDialog extends DialogFragment {
     }
 
     private void addMemoreaCard() {
-        memoreaListener.onAddMemoreaCard(new MemoreaInfo(((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString(),
+        MemoreaInfo newMemorea = new MemoreaInfo(((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString(),
                 ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString(),
                 ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString(),
-                15,
-                ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString()));
+                ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString(), 0);
+        newMemorea.createNewUUID();
+        memoreaListener.onAddMemoreaCard(newMemorea);
     }
 
     private void editMemoreaCard() {

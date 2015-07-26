@@ -14,4 +14,10 @@
     <string name="cancel">Cancel</string>
     <string name="add_memorea_title">Add Memorea</string>
     <string name="edit_memorea_title">Edit Memorea</string>
+    <string name="title_activity_memorize_screen">MemorizeScreenActivity</string>
+    <string name="give_hint">Hint</string>
+    <string name="show_answer">Answer</string>
+    <string name="prefence_file_key">com.getmemorease.memorease.memoreas_list</string>
+    <string name="wrong">Wrong</string>
+    <string name="got_it">Got it</string>
 </resources>

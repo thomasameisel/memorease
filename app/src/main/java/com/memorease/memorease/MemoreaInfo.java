@@ -1,5 +1,6 @@
 package com.memorease.memorease;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -10,25 +11,42 @@ public class MemoreaInfo {
     String question;
     String answer;
     String hint;
-    int nextMemorization;
-    UUID uuid;
+    int memorizationLevel;
+    int position;
+    UUID id;
 
-    public MemoreaInfo(final String title, final String question, final String answer, final int nextMemorization) {
-        this(title, question, answer, nextMemorization, null);
-    }
+    private int[] memorizationTimes = {2, 10, 60, 300, 1440, 7200, 36000, 172800};
 
-    public MemoreaInfo(final String title, final String question, final String answer, final int nextMemorization, final String hint) {
+    public MemoreaInfo(final String title, final String question, final String answer, final String hint, final int memorizationLevel) {
         this.title = title;
         this.question = question;
         this.answer = answer;
-        this.nextMemorization = nextMemorization;
         this.hint = hint;
-        this.uuid = UUID.randomUUID();
+        this.memorizationLevel = memorizationLevel;
     }
 
     public void updateFields(String[] updatedFields) {
         this.title = updatedFields[1];
         this.question = updatedFields[2];
         this.answer = updatedFields[3];
+    }
+
+    public void createNewUUID() {
+        id = UUID.randomUUID();
+    }
+
+    public int getCurMemorization() {
+        return memorizationTimes[memorizationLevel];
+    }
+
+    public String[] getFields() {
+        String[] fields = new String[6];
+        fields[0] = title;
+        fields[1] = question;
+        fields[2] = answer;
+        fields[3] = hint;
+        fields[4] = Integer.toString(memorizationLevel);
+        fields[5] = Integer.toString(position);
+        return fields;
     }
 }

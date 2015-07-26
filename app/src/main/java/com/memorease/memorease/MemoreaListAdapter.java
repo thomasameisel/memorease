@@ -20,7 +20,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     private AdapterView.OnItemClickListener onItemClickListener;
 
     public MemoreaListAdapter() {
-        this.memoreaList = new ArrayList<MemoreaInfo>();
+        this.memoreaList = new ArrayList<>();
     }
 
     public void setOnItemClickListener(final AdapterView.OnItemClickListener onItemClickListener) {
@@ -37,7 +37,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     public void onBindViewHolder(final MemoreaViewHolder holder, final int position) {
         MemoreaInfo memoreaInfo = memoreaList.get(position);
         holder.setTitle(memoreaInfo.title);
-        holder.setNextMemorization(Integer.toString(memoreaInfo.nextMemorization) + " minutes");
+        holder.setNextMemorization(Integer.toString(memoreaInfo.getCurMemorization()) + " minutes");
     }
 
     @Override
@@ -53,6 +53,12 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     public void onItemDismiss(final int position) {
         memoreaList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void addAll(ArrayList<MemoreaInfo> memoreaInfoList) {
+        for (MemoreaInfo memoreaInfo : memoreaInfoList) {
+            onItemAdd(memoreaInfo);
+        }
     }
 
     public void onItemAdd(final MemoreaInfo memoreaInfo) {
@@ -73,7 +79,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
 
     public MemoreaInfo getMemoreaByUUID(UUID uuid) {
         for (MemoreaInfo memoreaInfo : memoreaList) {
-            if (uuid.equals(memoreaInfo.uuid)) {
+            if (uuid.equals(memoreaInfo.id)) {
                 return memoreaInfo;
             }
         }

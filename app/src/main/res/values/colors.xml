@@ -13,6 +13,8 @@
     <item name="darkred" type="color">#FFCC0000</item>
     <item name="white" type="color">#FFFFFFFF</item>
     <item name="action_bar" type="color">#FF80CBC4</item>
+    <item name="memorize_screen_action_bar" type="color">#FFEF9A9A</item>
+    <color name="button_text" type="color">#FF1E88E5</color>
 
     <integer-array name="androidcolors">
         <item>@color/blue</item>
@@ -26,6 +28,7 @@
         <item>@color/darkorange</item>
         <item>@color/darkred</item>
         <item>@color/action_bar</item>
+        <item>@color/memorize_screen_action_bar</item>
+        <item>@color/button_text</item>
     </integer-array>
-
-</resources> 
+</resources>
