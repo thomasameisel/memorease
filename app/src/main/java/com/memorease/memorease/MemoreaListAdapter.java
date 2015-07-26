@@ -4,35 +4,40 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Tommy on 7/22/2015.
  */
 public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.MemoreaViewHolder> {
     private final List<MemoreaInfo> memoreaList;
-    private final View.OnClickListener onClickListener;
+    private AdapterView.OnItemClickListener onItemClickListener;
 
-    public MemoreaListAdapter(final List<MemoreaInfo> memoreaList, final View.OnClickListener listener) {
-        this.memoreaList = memoreaList;
-        this.onClickListener = listener;
+    public MemoreaListAdapter() {
+        this.memoreaList = new ArrayList<MemoreaInfo>();
+    }
+
+    public void setOnItemClickListener(final AdapterView.OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
     }
 
     @Override
     public MemoreaViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.memorea_card, parent, false);
-        itemView.setOnClickListener(onClickListener);
-        return new MemoreaViewHolder(itemView);
+        return new MemoreaViewHolder(itemView, this);
     }
 
     @Override
     public void onBindViewHolder(final MemoreaViewHolder holder, final int position) {
-        MemoreaInfo memoreInfo = memoreaList.get(position);
-        MemoreaViewHolder.title.setText(memoreInfo.title);
-        MemoreaViewHolder.nextMemorization.setText(Integer.toString(memoreInfo.nextMemorization)+" minutes");
+        MemoreaInfo memoreaInfo = memoreaList.get(position);
+        holder.setTitle(memoreaInfo.title);
+        holder.setNextMemorization(Integer.toString(memoreaInfo.nextMemorization) + " minutes");
     }
 
     @Override
@@ -59,14 +64,49 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         notifyItemInserted(position);
     }
 
-    public static class MemoreaViewHolder extends RecyclerView.ViewHolder {
-        protected static TextView title;
-        protected static TextView nextMemorization;
+    private void onItemHolderClick(final MemoreaViewHolder memoreaViewHolder) {
+        if (onItemClickListener != null) {
+            onItemClickListener.onItemClick(null, memoreaViewHolder.itemView,
+                    memoreaViewHolder.getAdapterPosition(), memoreaViewHolder.getItemId());
+        }
+    }
 
-        public MemoreaViewHolder(final View v) {
+    public MemoreaInfo getMemoreaByUUID(UUID uuid) {
+        for (MemoreaInfo memoreaInfo : memoreaList) {
+            if (uuid.equals(memoreaInfo.uuid)) {
+                return memoreaInfo;
+            }
+        }
+
+        return null;
+    }
+
+    public static class MemoreaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView title, nextMemorization;
+
+        private MemoreaListAdapter memoreaListAdapter;
+
+        public MemoreaViewHolder(final View v, final MemoreaListAdapter memoreaListAdapter) {
             super(v);
-            title =  (TextView) v.findViewById(R.id.text_view_memorea_title);
-            nextMemorization = (TextView)  v.findViewById(R.id.text_view_next_memorization);
+            v.setOnClickListener(this);
+
+            title = (TextView) v.findViewById(R.id.text_view_memorea_title);
+            nextMemorization = (TextView) v.findViewById(R.id.text_view_next_memorization);
+
+            this.memoreaListAdapter = memoreaListAdapter;
+        }
+
+        @Override
+        public void onClick(final View v) {
+            memoreaListAdapter.onItemHolderClick(this);
+        }
+
+        public void setTitle(String title) {
+            this.title.setText(title);
+        }
+
+        public void setNextMemorization(String nextMemorization) {
+            this.nextMemorization.setText(nextMemorization);
         }
     }
 

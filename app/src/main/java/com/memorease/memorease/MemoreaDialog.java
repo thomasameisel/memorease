@@ -8,25 +8,25 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 /**
  * Created by Tommy on 7/22/2015.
  */
-public class AddMemoreaDialog extends DialogFragment {
+public class MemoreaDialog extends DialogFragment {
     public interface OnAddMemoreaListener {
-        void addMemoreaCard(MemoreaInfo memoreaInfo);
+        void onAddMemoreaCard(MemoreaInfo memoreaInfo);
+        void onEditMemoreaCard(String[] updatedFields, int memoreaPosition);
     }
 
-    private OnAddMemoreaListener onAddMemoreaListener;
+    private OnAddMemoreaListener memoreaListener;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            onAddMemoreaListener = (OnAddMemoreaListener)activity;
+            memoreaListener = (OnAddMemoreaListener)activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement OnAddMemoreaListener");
         }
@@ -47,15 +47,19 @@ public class AddMemoreaDialog extends DialogFragment {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        addMemoreaCard();
+                        if (getArguments().getBoolean("is_editing")) {
+                            editMemoreaCard();
+                        } else {
+                            addMemoreaCard();
+                        }
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        AddMemoreaDialog.this.getDialog().cancel();
+                        MemoreaDialog.this.getDialog().cancel();
                     }
                 })
-                .setTitle(R.string.add_memorea_title);
+                .setTitle(getArguments().getString("dialog_title"));
         Dialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -63,17 +67,27 @@ public class AddMemoreaDialog extends DialogFragment {
     }
 
     private void setEditTextFields(final View view, final String[] memoreaInfo) {
-        ((EditText)view.findViewById(R.id.edit_text_title)).setText(memoreaInfo[0]);
-        ((EditText)view.findViewById(R.id.edit_text_question)).setText(memoreaInfo[1]);
-        ((EditText)view.findViewById(R.id.edit_text_answer)).setText(memoreaInfo[2]);
-        ((EditText)view.findViewById(R.id.edit_text_hint)).setText(memoreaInfo[3]);
+        ((EditText)view.findViewById(R.id.edit_text_title)).setText(memoreaInfo[1]);
+        ((EditText)view.findViewById(R.id.edit_text_question)).setText(memoreaInfo[2]);
+        ((EditText)view.findViewById(R.id.edit_text_answer)).setText(memoreaInfo[3]);
+        ((EditText)view.findViewById(R.id.edit_text_hint)).setText(memoreaInfo[4]);
     }
 
     private void addMemoreaCard() {
-        onAddMemoreaListener.addMemoreaCard(new MemoreaInfo(((EditText)getDialog().findViewById(R.id.edit_text_title)).getText().toString(),
-                ((EditText)getDialog().findViewById(R.id.edit_text_question)).getText().toString(),
-                ((EditText)getDialog().findViewById(R.id.edit_text_answer)).getText().toString(),
+        memoreaListener.onAddMemoreaCard(new MemoreaInfo(((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString(),
+                ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString(),
+                ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString(),
                 15,
-                ((EditText)getDialog().findViewById(R.id.edit_text_hint)).getText().toString()));
+                ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString()));
+    }
+
+    private void editMemoreaCard() {
+        final String[] updatedFields = new String[5];
+        updatedFields[0] = getArguments().getStringArray("edit_memorea_info")[0];
+        updatedFields[1] = ((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString();
+        updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
+        updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
+        updatedFields[4] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
+        memoreaListener.onEditMemoreaCard(updatedFields, getArguments().getInt("memorea_position"));
     }
 }
