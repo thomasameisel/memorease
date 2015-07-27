@@ -1,18 +1,17 @@
 package com.memorease.memorease;
 
 import android.app.AlarmManager;
+import android.support.v4.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -28,31 +27,40 @@ import java.util.UUID;
 
 public class MemoreaListActivity extends AppCompatActivity implements MemoreaDialog.OnAddMemoreaListener {
     private MemoreaListAdapter memoreaListAdapter;
-    private SharedPreferences sharedPrefences;
-    private SharedPreferences.Editor sharedPreferencesEditor;
+    public static SharedPreferences sharedPreferences;
+    public static SharedPreferences.Editor sharedPreferencesEditor;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorea_list);
-        sharedPrefences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
-        sharedPreferencesEditor = sharedPrefences.edit();
+        sharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
+        sharedPreferencesEditor = sharedPreferences.edit();
         memoreaListAdapter = ((MemoreaListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_list)).getMemoreaListAdapter();
-        Map<String,?> allKeys = sharedPrefences.getAll();
+        Map<String,?> allKeys = sharedPreferences.getAll();
         if (allKeys != null) {
             memoreaListAdapter.addAll(initializeListFromSharedPref(allKeys));
         }
         if (getIntent().getExtras() != null) {
-            createNotification(getIntent().getExtras().getBoolean("continue"), memoreaListAdapter.getMemoreaByUUID(UUID.fromString(getIntent().getExtras().getString("id"))));
+            MemoreaInfo memoreaInfo = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(getIntent().getExtras().getString("id")));
+            if (checkIfFinishedLastTime(getIntent().getExtras().getBoolean("continue"), memoreaInfo)) {
+                DialogFragment dialogFragment = BasicDialog.newInstance(R.string.completed, R.string.completed_message);
+                dialogFragment.show(getSupportFragmentManager(), "dialog");
+                memoreaInfo.holder.showSpecialMessage(getString(R.string.completed));
+            } else {
+                createNotification(getIntent().getExtras().getBoolean("continue"), memoreaInfo);
+            }
         }
     }
 
     private ArrayList<MemoreaInfo> initializeListFromSharedPref(Map<String, ?> allKeys) {
         ArrayList<MemoreaInfo> memoreInfoCards = new ArrayList<>(allKeys.size());
         for (Map.Entry<String,?> entry : allKeys.entrySet()) {
-            final MemoreaInfo memoreaInfo = initialzeMemoreaFromSharedPref(entry);
-            if (memoreaInfo != null) {
-                memoreInfoCards.add(memoreaInfo);
+            if (entry.getValue().getClass() == String.class) {
+                final MemoreaInfo memoreaInfo = initializeMemoreaFromSharedPref(entry);
+                if (memoreaInfo != null) {
+                    memoreInfoCards.add(memoreaInfo);
+                }
             }
         }
         Collections.sort(memoreInfoCards, new Comparator<MemoreaInfo>() {
@@ -64,18 +72,18 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         return memoreInfoCards;
     }
 
-    private MemoreaInfo initialzeMemoreaFromSharedPref(final Map.Entry<String,?> entry) {
+    private MemoreaInfo initializeMemoreaFromSharedPref(final Map.Entry<String, ?> entry) {
         MemoreaInfo memoreaInfo = null;
         try {
             String[] fields = getStringArrayFromJSON(new JSONArray((String)entry.getValue()));
             memoreaInfo = new MemoreaInfo(fields[0], fields[1], fields[2], fields[3], Integer.parseInt(fields[4]));
             memoreaInfo.id = UUID.fromString(entry.getKey());
             memoreaInfo.position = Integer.parseInt(fields[5]);
+            return memoreaInfo;
         } catch (final JSONException e) {
             e.printStackTrace();
+            return memoreaInfo;
         }
-
-        return memoreaInfo;
     }
 
     @Override
@@ -85,7 +93,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
@@ -93,16 +101,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-            getSupportActionBar().setTitle(R.string.app_name);
-        }
-
-        super.onBackPressed();
     }
 
     public void addMemorea(final View view) {
@@ -143,13 +141,17 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     public void onAddMemoreaCard(final MemoreaInfo memoreaInfo) {
         //create card using this info and add to memoreaList
         final MemoreaListFragment memoreaListFragment = (MemoreaListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_list);
-        memoreaListFragment.addMemoreaCard(memoreaInfo);
-        memoreaInfo.position = memoreaListAdapter.getItemCount()-1;
-        updateSharedPref(memoreaInfo, sharedPreferencesEditor);
         createNotification(false, memoreaInfo);
+        memoreaListFragment.addMemoreaCard(memoreaInfo);
+        memoreaInfo.position = memoreaListAdapter.getItemCount() - 1;
+        updateSharedPref(memoreaInfo, sharedPreferencesEditor);
     }
 
-    private void createNotification(boolean useNextTime, final MemoreaInfo memoreaInfo) {
+    private boolean checkIfFinishedLastTime(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
+        return useNextTime && memoreaInfo.memorizationLevel == memoreaInfo.getTotalMemorizationLevels();
+    }
+
+    private void createNotification(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         alarmIntent.putExtra("title", memoreaInfo.title);
         alarmIntent.putExtra("question", memoreaInfo.question);
@@ -164,14 +166,14 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
             ++memoreaInfo.memorizationLevel;
             updateSharedPref(memoreaInfo, sharedPreferencesEditor);
             memoreaListAdapter.notifyItemChanged(memoreaInfo.position);
-            //alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
-            // debug
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
-        } else {
-            //alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
-            // debug
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 5 * 1000, pendingIntent);
         }
+        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
+        sharedPreferencesEditor.putLong(memoreaInfo.id.toString()+"_notification_time", Calendar.getInstance().getTimeInMillis()+((long) memoreaInfo.getCurMemorization() * 60 * 1000));
+        sharedPreferencesEditor.commit();*/
+        // debug
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
+        sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", Calendar.getInstance().getTimeInMillis() + 10 * 1000);
+        sharedPreferencesEditor.commit();
     }
 
     @Override

@@ -23,12 +23,15 @@ import com.memorease.memorease.views.CircleAngleAnimation;
  */
 public class MemorizeScreenFragment extends Fragment {
     private boolean gaveHint = false;
+    private int spaceBetweenButtons;
 
     public MemorizeScreenFragment() {
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        spaceBetweenButtons = (int)dpToPx(50);
+
         final View view = inflater.inflate(R.layout.fragment_memorize_screen, container, false);
         final Circle circle = (Circle) view.findViewById(R.id.circle);
 
@@ -44,8 +47,8 @@ public class MemorizeScreenFragment extends Fragment {
                 animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
                         createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
                         createFadeAnimator(view.findViewById(R.id.button_give_hint), 0, 1),
-                        createTranslationXAnimator(view.findViewById(R.id.button_answer), 0-(int)dpToPx(50), 0),
-                        createTranslationXAnimator(view.findViewById(R.id.button_give_hint), (int)dpToPx(50), 0));
+                        createTranslationXAnimator(view.findViewById(R.id.button_answer), 0-spaceBetweenButtons, 0),
+                        createTranslationXAnimator(view.findViewById(R.id.button_give_hint), spaceBetweenButtons, 0));
                 animationSet.start();
             }
             @Override
@@ -65,7 +68,9 @@ public class MemorizeScreenFragment extends Fragment {
         if (!gaveHint) {
             final AnimatorSet animationSet = new AnimatorSet();
             animationSet.playTogether(createTranslationYAnimator(getView().findViewById(R.id.text_view_question), 0, 0 - getView().findViewById(R.id.text_view_hint).getHeight()),
-                    createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1));
+                    createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1),
+                    createFadeAnimator(getView().findViewById(R.id.button_give_hint), 1, 0),
+                    createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0, 0-spaceBetweenButtons));
             animationSet.start();
             gaveHint = true;
         }

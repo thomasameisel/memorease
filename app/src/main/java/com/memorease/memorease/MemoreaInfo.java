@@ -1,6 +1,6 @@
 package com.memorease.memorease;
 
-import java.util.Set;
+import java.util.Calendar;
 import java.util.UUID;
 
 /**
@@ -14,6 +14,7 @@ public class MemoreaInfo {
     int memorizationLevel;
     int position;
     UUID id;
+    MemoreaListAdapter.MemoreaViewHolder holder;
 
     private int[] memorizationTimes = {2, 10, 60, 300, 1440, 7200, 36000, 172800};
 
@@ -29,14 +30,11 @@ public class MemoreaInfo {
         this.title = updatedFields[1];
         this.question = updatedFields[2];
         this.answer = updatedFields[3];
+        this.hint = updatedFields[4];
     }
 
     public void createNewUUID() {
         id = UUID.randomUUID();
-    }
-
-    public int getCurMemorization() {
-        return memorizationTimes[memorizationLevel];
     }
 
     public String[] getFields() {
@@ -48,5 +46,17 @@ public class MemoreaInfo {
         fields[4] = Integer.toString(memorizationLevel);
         fields[5] = Integer.toString(position);
         return fields;
+    }
+
+    public int getTotalMemorizationLevels() {
+        return memorizationTimes.length;
+    }
+
+    public long getTimeUntilNextAlarm() {
+        return getTimeNextAlarm()-Calendar.getInstance().getTimeInMillis();
+    }
+
+    private long getTimeNextAlarm() {
+        return MemoreaListActivity.sharedPreferences.getLong(id.toString()+"_notification_time", 0);
     }
 }

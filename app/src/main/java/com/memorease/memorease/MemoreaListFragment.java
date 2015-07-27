@@ -1,5 +1,9 @@
 package com.memorease.memorease;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 
@@ -23,11 +28,14 @@ import java.util.UUID;
 public class MemoreaListFragment extends Fragment implements AdapterView.OnItemClickListener {
     private MemoreaListAdapter memoreaListAdapter;
     private RecyclerView recyclerView;
+    private BroadcastReceiver broadcastReceiver;
+    private SimpleDateFormat watchTime;
 
     public MemoreaListFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        watchTime = new SimpleDateFormat("HH:mm");
         final View view = inflater.inflate(R.layout.fragment_memorea_list, container, false);
         ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
@@ -41,8 +49,33 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+                    memoreaListAdapter.correctNextMemorizationTimesAll(getString(R.string.memorization_ready));
+                }
+            }
+        };
+
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        memoreaListAdapter.correctNextMemorizationTimesAll(getString(R.string.memorization_ready));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (broadcastReceiver != null) {
+            getActivity().unregisterReceiver(broadcastReceiver);
+        }
+    }
+
     private RecyclerView initRecyclerView(final View view) {
         final RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
+        recyclerView.setScrollContainer(false);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -113,14 +146,24 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
-        // Create new fragment and transaction
-        final String[] info = new String[5];
-        info[0] = memoreaInfoClicked.id.toString();
-        info[1] = memoreaInfoClicked.title;
-        info[2] = memoreaInfoClicked.question;
-        info[3] = memoreaInfoClicked.answer;
-        info[4] = memoreaInfoClicked.hint;
+        if (!memoreaInfoClicked.holder.specialMessageDisplayed) {
+            // Create new fragment and transaction
+            final String[] info = new String[5];
+            info[0] = memoreaInfoClicked.id.toString();
+            info[1] = memoreaInfoClicked.title;
+            info[2] = memoreaInfoClicked.question;
+            info[3] = memoreaInfoClicked.answer;
+            info[4] = memoreaInfoClicked.hint;
 
-        ((MemoreaListActivity)getActivity()).openMemoreaInfoFragment(info, position);
+            ((MemoreaListActivity) getActivity()).openMemoreaInfoFragment(info, position);
+        } else {
+            Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
+            memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
+            memorizeScreenIntent.putExtra("question", memoreaInfoClicked.question);
+            memorizeScreenIntent.putExtra("answer", memoreaInfoClicked.answer);
+            memorizeScreenIntent.putExtra("hint", memoreaInfoClicked.hint);
+            memorizeScreenIntent.putExtra("id", memoreaInfoClicked.id.toString());
+            startActivity(memorizeScreenIntent);
+        }
     }
 }

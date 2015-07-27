@@ -24,9 +24,12 @@
                 style="@style/TextAppearance.AppCompat.Widget.ActionMode.Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="PIN"
                 android:textColor="@color/white"
-                android:layout_gravity="center"/>
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:gravity="center_horizontal"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
     <fragment
