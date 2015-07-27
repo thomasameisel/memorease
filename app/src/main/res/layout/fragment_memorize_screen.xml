@@ -40,17 +40,21 @@
             android:onClick="giveHint"
             android:text="@string/give_hint"
             android:textColor="@color/button_text"
-            android:textAllCaps="true"/>
-        <View
+            android:textAllCaps="true"
+            android:alpha="0"/>
+        <com.memorease.memorease.views.Circle
+            android:id="@+id/circle"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp" />
         <Button
+            android:id="@+id/button_answer"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="showAnswer"
             android:text="@string/show_answer"
             android:textColor="@color/button_text"
-            android:textAllCaps="true"/>
+            android:textAllCaps="true"
+            android:alpha="0"/>
     </LinearLayout>
 </RelativeLayout>
