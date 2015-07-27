@@ -47,6 +47,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
                 DialogFragment dialogFragment = BasicDialog.newInstance(R.string.completed, R.string.completed_message);
                 dialogFragment.show(getSupportFragmentManager(), "dialog");
                 memoreaInfo.holder.showSpecialMessage(getString(R.string.completed));
+                memoreaInfo.completed = true;
             } else {
                 createNotification(getIntent().getExtras().getBoolean("continue"), memoreaInfo);
             }

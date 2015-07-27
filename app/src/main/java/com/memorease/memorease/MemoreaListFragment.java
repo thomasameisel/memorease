@@ -146,7 +146,15 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
-        if (!memoreaInfoClicked.holder.specialMessageDisplayed) {
+        if (memoreaInfoClicked.holder.specialMessageDisplayed && !memoreaInfoClicked.completed) {
+            Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
+            memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
+            memorizeScreenIntent.putExtra("question", memoreaInfoClicked.question);
+            memorizeScreenIntent.putExtra("answer", memoreaInfoClicked.answer);
+            memorizeScreenIntent.putExtra("hint", memoreaInfoClicked.hint);
+            memorizeScreenIntent.putExtra("id", memoreaInfoClicked.id.toString());
+            startActivity(memorizeScreenIntent);
+        } else {
             // Create new fragment and transaction
             final String[] info = new String[5];
             info[0] = memoreaInfoClicked.id.toString();
@@ -156,14 +164,6 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             info[4] = memoreaInfoClicked.hint;
 
             ((MemoreaListActivity) getActivity()).openMemoreaInfoFragment(info, position);
-        } else {
-            Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
-            memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
-            memorizeScreenIntent.putExtra("question", memoreaInfoClicked.question);
-            memorizeScreenIntent.putExtra("answer", memoreaInfoClicked.answer);
-            memorizeScreenIntent.putExtra("hint", memoreaInfoClicked.hint);
-            memorizeScreenIntent.putExtra("id", memoreaInfoClicked.id.toString());
-            startActivity(memorizeScreenIntent);
         }
     }
 }

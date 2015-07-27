@@ -44,11 +44,17 @@ public class MemorizeScreenFragment extends Fragment {
             @Override
             public void onAnimationEnd(final Animation animation) {
                 final AnimatorSet animationSet = new AnimatorSet();
-                animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
-                        createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
-                        createFadeAnimator(view.findViewById(R.id.button_give_hint), 0, 1),
-                        createTranslationXAnimator(view.findViewById(R.id.button_answer), 0-spaceBetweenButtons, 0),
-                        createTranslationXAnimator(view.findViewById(R.id.button_give_hint), spaceBetweenButtons, 0));
+                if (((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString().matches("")) {
+                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
+                            createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
+                            createTranslationXAnimator(view.findViewById(R.id.button_answer), 0-spaceBetweenButtons, 0-spaceBetweenButtons));
+                } else {
+                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
+                            createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
+                            createFadeAnimator(view.findViewById(R.id.button_give_hint), 0, 1),
+                            createTranslationXAnimator(view.findViewById(R.id.button_answer), 0 - spaceBetweenButtons, 0),
+                            createTranslationXAnimator(view.findViewById(R.id.button_give_hint), spaceBetweenButtons, 0));
+                }
                 animationSet.start();
             }
             @Override

@@ -107,15 +107,19 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     }
 
     private void correctNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo) {
-        final float timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
-        if (timeUntilNextAlarm < 0) {
-            memoreaInfo.holder.showSpecialMessage(memorizationReady);
-        } else {
-            int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
-            if (minutesUntilNextAlarm <= 0) {
-                minutesUntilNextAlarm = 1;
+        if (!memoreaInfo.completed) {
+            final float timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
+            if (timeUntilNextAlarm < 0) {
+                memoreaInfo.holder.showSpecialMessage(memorizationReady);
+            } else {
+                int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
+                if (minutesUntilNextAlarm <= 0) {
+                    minutesUntilNextAlarm = 1;
+                }
+                memoreaInfo.holder.setNextMemorization(minutesUntilNextAlarm);
             }
-            memoreaInfo.holder.setNextMemorization(minutesUntilNextAlarm);
+        } else {
+            memoreaInfo.holder.showSpecialMessage("Completed!");
         }
     }
 
@@ -147,7 +151,11 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
 
         public void setNextMemorization(final int nextMemorizationDisplayed) {
-            this.nextMemorization.setText(Integer.toString(nextMemorizationDisplayed)+" minutes");
+            if (nextMemorizationDisplayed > 1) {
+                this.nextMemorization.setText(Integer.toString(nextMemorizationDisplayed) + " minutes");
+            } else {
+                this.nextMemorization.setText("1 minute");
+            }
         }
 
         public void showSpecialMessage(final String specialMessage) {

@@ -47,6 +47,13 @@ public class MemoreaInfoFragment extends Fragment {
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
         ((TextView)view.findViewById(R.id.text_view_memorea_info_question)).setText(updatedFields[2]);
         ((TextView)view.findViewById(R.id.text_view_memorea_info_answer)).setText(updatedFields[3]);
-        ((TextView)view.findViewById(R.id.text_view_memorea_info_hint)).setText(updatedFields[4]);
+        if (updatedFields[4].matches("")) {
+            view.findViewById(R.id.text_view_memorea_info_hint_label).setVisibility(View.GONE);
+            view.findViewById(R.id.text_view_memorea_info_hint).setVisibility(View.GONE);
+        } else {
+            view.findViewById(R.id.text_view_memorea_info_hint_label).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.text_view_memorea_info_hint).setVisibility(View.VISIBLE);
+            ((TextView) view.findViewById(R.id.text_view_memorea_info_hint)).setText(updatedFields[4]);
+        }
     }
 }

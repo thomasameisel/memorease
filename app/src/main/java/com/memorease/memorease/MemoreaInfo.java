@@ -14,6 +14,7 @@ public class MemoreaInfo {
     int memorizationLevel;
     int position;
     UUID id;
+    boolean completed=false;
     MemoreaListAdapter.MemoreaViewHolder holder;
 
     private int[] memorizationTimes = {2, 10, 60, 300, 1440, 7200, 36000, 172800};

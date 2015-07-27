@@ -46,6 +46,7 @@
                 android:layout_gravity="fill_horizontal"
                 android:textSize="@dimen/card_text_size"/>
             <TextView
+                android:id="@+id/text_view_memorea_info_hint_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/card_text_size"

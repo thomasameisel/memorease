@@ -24,4 +24,6 @@
     <string name="completed">Completed Memorea!</string>
     <string name="completed_message">You completed all the times for this memorea! Congratulations!</string>
     <string name="memorization_ready">Memorization ready!</string>
+    <string name="required_fields_not_set">Required fields not set!</string>
+    <string name="required_fields_not_set_message">Please set the title, question, and answer fields</string>
 </resources>
