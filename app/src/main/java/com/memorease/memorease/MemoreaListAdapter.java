@@ -1,7 +1,5 @@
 package com.memorease.memorease;
 
-import android.os.SystemClock;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,10 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -41,9 +36,8 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     @Override
     public void onBindViewHolder(final MemoreaViewHolder holder, final int position) {
         MemoreaInfo memoreaInfo = memoreaList.get(position);
-        memoreaInfo.holder = holder;
         holder.setTitle(memoreaInfo.title);
-        correctNextMemorizationTime("Memorization ready!", memoreaInfo);
+        setNextMemorizationTime("Memorization ready!", memoreaInfo, holder);
     }
 
     @Override
@@ -97,35 +91,24 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         return memoreaList.get(position);
     }
 
-    public void correctNextMemorizationTimesAll(final String memorizationReady) {
-        for (int i = 0; i < getItemCount(); ++i) {
-            final MemoreaInfo memoreaInfo = getItem(i);
-            if (memoreaInfo.holder != null) {
-                correctNextMemorizationTime(memorizationReady, memoreaInfo);
-            }
-        }
-    }
-
-    private void correctNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo) {
+    private void setNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
         if (!memoreaInfo.completed) {
             final float timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
             if (timeUntilNextAlarm < 0) {
-                memoreaInfo.holder.showSpecialMessage(memorizationReady);
+                holder.setSpecialMessage(memorizationReady);
             } else {
                 int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
                 if (minutesUntilNextAlarm <= 0) {
                     minutesUntilNextAlarm = 1;
                 }
-                memoreaInfo.holder.setNextMemorization(minutesUntilNextAlarm);
+                holder.setNextMemorization(minutesUntilNextAlarm);
             }
         } else {
-            memoreaInfo.holder.showSpecialMessage("Completed!");
+            holder.setSpecialMessage("Completed!");
         }
     }
 
     public static class MemoreaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public boolean specialMessageDisplayed = false;
-
         private TextView title, nextMemorizationLabel, nextMemorization, specialMessage;
         private MemoreaListAdapter memoreaListAdapter;
 
@@ -137,6 +120,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             nextMemorization = (TextView) v.findViewById(R.id.text_view_next_memorization);
             nextMemorizationLabel = (TextView) v.findViewById(R.id.text_view_next_memorization_label);
             specialMessage = (TextView) v.findViewById(R.id.text_view_special_info);
+            showSpecialMessage(false);
 
             this.memoreaListAdapter = memoreaListAdapter;
         }
@@ -153,18 +137,19 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         public void setNextMemorization(final int nextMemorizationDisplayed) {
             if (nextMemorizationDisplayed > 1) {
                 this.nextMemorization.setText(Integer.toString(nextMemorizationDisplayed) + " minutes");
-            } else {
+            } else if (nextMemorizationDisplayed == 1) {
                 this.nextMemorization.setText("1 minute");
+            } else {
+                this.nextMemorization.setText("Less than 1 minute");
             }
         }
 
-        public void showSpecialMessage(final String specialMessage) {
-            setSpecialMessageViews(true);
+        public void setSpecialMessage(final String specialMessage) {
+            showSpecialMessage(true);
             this.specialMessage.setText(specialMessage);
         }
 
-        public void setSpecialMessageViews(final boolean specialMessageVisible) {
-            specialMessageDisplayed = specialMessageVisible;
+        public void showSpecialMessage(final boolean specialMessageVisible) {
             if (specialMessageVisible) {
                 nextMemorization.setVisibility(View.INVISIBLE);
                 nextMemorizationLabel.setVisibility(View.INVISIBLE);

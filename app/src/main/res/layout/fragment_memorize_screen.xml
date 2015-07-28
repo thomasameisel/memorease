@@ -24,6 +24,12 @@
         android:textSize="@dimen/memorize_screen_text_size"
         android:textColor="@color/secondary_text_default_material_light"
         android:alpha="0"/>
+    <com.memorease.memorease.views.Circle
+        android:id="@+id/circle"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/text_view_hint"/>
     <LinearLayout
         android:id="@+id/buttons"
         android:layout_width="match_parent"
@@ -37,20 +43,22 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:layout_marginRight="25dp"
+            android:layout_marginEnd="25dp"
             android:onClick="giveHint"
             android:text="@string/give_hint"
             android:textColor="@color/button_text"
             android:textAllCaps="true"
             android:alpha="0"/>
-        <com.memorease.memorease.views.Circle
-            android:id="@+id/circle"
-            android:layout_width="50dp"
-            android:layout_height="50dp" />
         <Button
             android:id="@+id/button_answer"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:layout_marginLeft="25dp"
+            android:layout_marginStart="25dp"
             android:onClick="showAnswer"
             android:text="@string/show_answer"
             android:textColor="@color/button_text"

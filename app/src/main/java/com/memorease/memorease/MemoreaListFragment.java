@@ -56,13 +56,13 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                    memoreaListAdapter.correctNextMemorizationTimesAll(getString(R.string.memorization_ready));
+                    memoreaListAdapter.notifyDataSetChanged();
                 }
             }
         };
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        memoreaListAdapter.correctNextMemorizationTimesAll(getString(R.string.memorization_ready));
+        memoreaListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -88,11 +88,6 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         return new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(final RecyclerView recyclerView, final RecyclerView.ViewHolder dragged, final RecyclerView.ViewHolder target) {
-                final int draggedPosition = dragged.getAdapterPosition();
-                final int targetPosition = target.getAdapterPosition();
-                memoreaListAdapter.getItem(draggedPosition).position = targetPosition;
-                memoreaListAdapter.getItem(targetPosition).position = draggedPosition;
-                ((MemoreaListActivity)getActivity()).updateSharedPrefOnMove(memoreaListAdapter.getItem(draggedPosition), memoreaListAdapter.getItem(targetPosition));
                 memoreaListAdapter.onItemMove(dragged.getAdapterPosition(), target.getAdapterPosition());
                 return true;
             }
@@ -112,6 +107,7 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                         .setActionTextColor(Color.RED)
                         .show();
                 ((MemoreaListActivity)getActivity()).updateSharedPrefOnDelete(deletedCard);
+                ((MemoreaListActivity)getActivity()).clearMemoreaNotification(deletedCard);
                 memoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
             }
 
@@ -146,7 +142,9 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
-        if (memoreaInfoClicked.holder.specialMessageDisplayed && !memoreaInfoClicked.completed) {
+        if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.completed) {
+            ((MemoreaListActivity)getActivity()).clearMemoreaNotification(memoreaInfoClicked);
+
             Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
             memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
             memorizeScreenIntent.putExtra("question", memoreaInfoClicked.question);
@@ -155,7 +153,6 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             memorizeScreenIntent.putExtra("id", memoreaInfoClicked.id.toString());
             startActivity(memorizeScreenIntent);
         } else {
-            // Create new fragment and transaction
             final String[] info = new String[5];
             info[0] = memoreaInfoClicked.id.toString();
             info[1] = memoreaInfoClicked.title;

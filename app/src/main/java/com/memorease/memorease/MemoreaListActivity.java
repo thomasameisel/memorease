@@ -1,6 +1,7 @@
 package com.memorease.memorease;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.support.v4.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -44,9 +45,9 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         if (getIntent().getExtras() != null) {
             MemoreaInfo memoreaInfo = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(getIntent().getExtras().getString("id")));
             if (checkIfFinishedLastTime(getIntent().getExtras().getBoolean("continue"), memoreaInfo)) {
-                DialogFragment dialogFragment = BasicDialog.newInstance(R.string.completed, R.string.completed_message);
+                DialogFragment dialogFragment = BasicDialog.newInstance(getString(R.string.completed), String.format(getString(R.string.completed_message), memoreaInfo.title));
                 dialogFragment.show(getSupportFragmentManager(), "dialog");
-                memoreaInfo.holder.showSpecialMessage(getString(R.string.completed));
+                ++memoreaInfo.memorizationLevel;
                 memoreaInfo.completed = true;
             } else {
                 createNotification(getIntent().getExtras().getBoolean("continue"), memoreaInfo);
@@ -64,12 +65,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
                 }
             }
         }
-        Collections.sort(memoreInfoCards, new Comparator<MemoreaInfo>() {
-            @Override
-            public int compare(final MemoreaInfo memoreaInfo1, final MemoreaInfo memoreaInfo2) {
-                return ((Integer) memoreaInfo1.position).compareTo(memoreaInfo2.position);
-            }
-        });
+
         return memoreInfoCards;
     }
 
@@ -79,18 +75,11 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
             String[] fields = getStringArrayFromJSON(new JSONArray((String)entry.getValue()));
             memoreaInfo = new MemoreaInfo(fields[0], fields[1], fields[2], fields[3], Integer.parseInt(fields[4]));
             memoreaInfo.id = UUID.fromString(entry.getKey());
-            memoreaInfo.position = Integer.parseInt(fields[5]);
             return memoreaInfo;
         } catch (final JSONException e) {
             e.printStackTrace();
             return memoreaInfo;
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        boolean a = true;
     }
 
     @Override
@@ -144,8 +133,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         final MemoreaListFragment memoreaListFragment = (MemoreaListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_list);
         createNotification(false, memoreaInfo);
         memoreaListFragment.addMemoreaCard(memoreaInfo);
-        memoreaInfo.position = memoreaListAdapter.getItemCount() - 1;
-        updateSharedPref(memoreaInfo, sharedPreferencesEditor);
+        updateSharedPref(memoreaInfo);
     }
 
     private boolean checkIfFinishedLastTime(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
@@ -153,28 +141,32 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     private void createNotification(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
+        final int notificationId = (int)Calendar.getInstance().getTimeInMillis();
+        memoreaInfo.notificationId = notificationId;
+
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
         alarmIntent.putExtra("title", memoreaInfo.title);
         alarmIntent.putExtra("question", memoreaInfo.question);
         alarmIntent.putExtra("answer", memoreaInfo.answer);
         alarmIntent.putExtra("hint", memoreaInfo.hint);
         alarmIntent.putExtra("id", memoreaInfo.id.toString());
+        alarmIntent.putExtra("notification_id", memoreaInfo.notificationId);
 
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(this, (int)Calendar.getInstance().getTimeInMillis(), alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         final AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
 
         if (useNextTime) {
             ++memoreaInfo.memorizationLevel;
-            updateSharedPref(memoreaInfo, sharedPreferencesEditor);
-            memoreaListAdapter.notifyItemChanged(memoreaInfo.position);
+            updateSharedPref(memoreaInfo);
+            memoreaListAdapter.notifyDataSetChanged();
         }
-        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
         sharedPreferencesEditor.putLong(memoreaInfo.id.toString()+"_notification_time", Calendar.getInstance().getTimeInMillis()+((long) memoreaInfo.getCurMemorization() * 60 * 1000));
-        sharedPreferencesEditor.commit();*/
-        // debug
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
-        sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", Calendar.getInstance().getTimeInMillis() + 10 * 1000);
         sharedPreferencesEditor.commit();
+        // debug
+        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
+        sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", Calendar.getInstance().getTimeInMillis() + 10 * 1000);
+        sharedPreferencesEditor.apply();*/
     }
 
     @Override
@@ -184,27 +176,27 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
 
         MemoreaInfo memoreaToUpdate = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(updatedFields[0]));
         memoreaToUpdate.updateFields(updatedFields);
-        updateSharedPref(memoreaToUpdate, sharedPreferencesEditor);
+        updateSharedPref(memoreaToUpdate);
         memoreaListAdapter.notifyItemChanged(memoreaPosition);
-    }
-
-    public void updateSharedPrefOnMove(MemoreaInfo memoreaInfo1, MemoreaInfo memoreaInfo2) {
-        updateSharedPref(memoreaInfo1, sharedPreferencesEditor);
-        updateSharedPref(memoreaInfo2, sharedPreferencesEditor);
     }
 
     public void updateSharedPrefOnDelete(final MemoreaInfo deletedCard) {
         sharedPreferencesEditor.remove(deletedCard.id.toString());
-        sharedPreferencesEditor.commit();
+        sharedPreferencesEditor.apply();
     }
 
     public void updateSharedPrefOnAdd(final MemoreaInfo deletedCard) {
-        updateSharedPref(deletedCard, sharedPreferencesEditor);
+        updateSharedPref(deletedCard);
     }
 
-    private void updateSharedPref(MemoreaInfo memoreaInfo, SharedPreferences.Editor sharedPreferencesEditor) {
+    private void updateSharedPref(final MemoreaInfo memoreaInfo) {
         sharedPreferencesEditor.putString(memoreaInfo.id.toString(), getJSONStringFromArray(memoreaInfo.getFields()).toString());
-        sharedPreferencesEditor.commit();
+        sharedPreferencesEditor.apply();
+    }
+
+    public void clearMemoreaNotification(final MemoreaInfo memoreaInfo) {
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(memoreaInfo.notificationId);
     }
 
     public void openMemoreaInfoFragment(final String[] info, final int position) {
@@ -225,8 +217,8 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
 
     public JSONArray getJSONStringFromArray(String[] values) {
         JSONArray array = new JSONArray();
-        for (int i = 0; i < values.length; ++i) {
-            array.put(values[i]);
+        for (String value : values) {
+            array.put(value);
         }
         return array;
     }

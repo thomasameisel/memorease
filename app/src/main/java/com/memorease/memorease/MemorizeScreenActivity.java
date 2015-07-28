@@ -41,6 +41,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
     public void answerWrong(final View view) {
         final Intent intent = new Intent(this, MemoreaListActivity.class);
         intent.putExtra("id", getIntent().getExtras().getString("id"));
+        intent.putExtra("notification_id", getIntent().getExtras().getInt("notification_id"));
         intent.putExtra("continue", false);
         startActivity(intent);
     }
@@ -48,6 +49,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
     public void answerCorrect(final View view) {
         final Intent intent = new Intent(this, MemoreaListActivity.class);
         intent.putExtra("id", getIntent().getExtras().getString("id"));
+        intent.putExtra("notification_id", getIntent().getExtras().getString("notification_id"));
         intent.putExtra("continue", true);
         startActivity(intent);
     }

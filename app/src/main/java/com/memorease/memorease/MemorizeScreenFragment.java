@@ -44,6 +44,7 @@ public class MemorizeScreenFragment extends Fragment {
             @Override
             public void onAnimationEnd(final Animation animation) {
                 final AnimatorSet animationSet = new AnimatorSet();
+
                 if (((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString().matches("")) {
                     animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
                             createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),

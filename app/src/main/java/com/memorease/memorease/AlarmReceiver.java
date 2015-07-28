@@ -19,6 +19,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         final String title = intent.getStringExtra("title");
+        final int notificationId = intent.getIntExtra("notification_id", (int)Calendar.getInstance().getTimeInMillis());
 
         Intent notIntent = new Intent (context, MemorizeScreenActivity.class);
         notIntent.putExtras(intent);
@@ -34,6 +35,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setAutoCancel(true);
 
         Notification notification = builder.build();
-        manager.notify((int)Calendar.getInstance().getTimeInMillis(), notification);
+        manager.notify(notificationId, notification);
     }
 }

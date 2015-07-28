@@ -27,8 +27,5 @@
         <item>@color/darkgreen</item>
         <item>@color/darkorange</item>
         <item>@color/darkred</item>
-        <item>@color/action_bar</item>
-        <item>@color/memorize_screen_action_bar</item>
-        <item>@color/button_text</item>
     </integer-array>
 </resources>

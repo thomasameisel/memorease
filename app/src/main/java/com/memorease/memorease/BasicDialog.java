@@ -9,19 +9,19 @@ import android.view.View;
 import android.widget.Button;
 
 public class BasicDialog extends DialogFragment {
-    public static BasicDialog newInstance(final int title, final int message) {
+    public static BasicDialog newInstance(final String title, final String message) {
         final BasicDialog frag = new BasicDialog();
         final Bundle args = new Bundle();
-        args.putInt("title", title);
-        args.putInt("message", message);
+        args.putString("title", title);
+        args.putString("message", message);
         frag.setArguments(args);
         return frag;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final int title = getArguments().getInt("title");
-        final int message = getArguments().getInt("message");
+        final String title = getArguments().getString("title");
+        final String message = getArguments().getString("message");
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)
