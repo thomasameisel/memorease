@@ -3,20 +3,23 @@ package com.memorease.memorease;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.widget.TextView;
 
 /**
  * Created by Tommy on 7/22/2015.
@@ -116,7 +119,11 @@ public class MemoreaDialog extends DialogFragment {
                     field.requestFocus();
                     setFocus = true;
                 }
-                field.getBackground().setColorFilter(Color.parseColor("#B7B2B0"), PorterDuff.Mode.SRC_OVER);
+                final Drawable originalDrawable = field.getBackground();
+                final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
+                DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(Color.RED));
+                field.setBackground(wrappedDrawable);
+                //field.getBackground().setColorFilter(Color.parseColor("#B7B2B0"), PorterDuff.Mode.SRC_OVER);
             }
         }
     }
