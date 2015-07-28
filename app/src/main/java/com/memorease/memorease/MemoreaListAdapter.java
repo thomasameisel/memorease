@@ -29,7 +29,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
 
     @Override
     public MemoreaViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.memorea_card, parent, false);
+        final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.memorea_card, parent, false);
         return new MemoreaViewHolder(itemView, this);
     }
 
@@ -120,7 +120,6 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             nextMemorization = (TextView) v.findViewById(R.id.text_view_next_memorization);
             nextMemorizationLabel = (TextView) v.findViewById(R.id.text_view_next_memorization_label);
             specialMessage = (TextView) v.findViewById(R.id.text_view_special_info);
-            showSpecialMessage(false);
 
             this.memoreaListAdapter = memoreaListAdapter;
         }
@@ -135,6 +134,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
 
         public void setNextMemorization(final int nextMemorizationDisplayed) {
+            showSpecialMessage(false);
             if (nextMemorizationDisplayed > 1) {
                 this.nextMemorization.setText(Integer.toString(nextMemorizationDisplayed) + " minutes");
             } else if (nextMemorizationDisplayed == 1) {

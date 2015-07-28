@@ -160,13 +160,13 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
             updateSharedPref(memoreaInfo);
             memoreaListAdapter.notifyDataSetChanged();
         }
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
+        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
         sharedPreferencesEditor.putLong(memoreaInfo.id.toString()+"_notification_time", Calendar.getInstance().getTimeInMillis()+((long) memoreaInfo.getCurMemorization() * 60 * 1000));
-        sharedPreferencesEditor.commit();
+        sharedPreferencesEditor.commit();*/
         // debug
-        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
         sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", Calendar.getInstance().getTimeInMillis() + 10 * 1000);
-        sharedPreferencesEditor.apply();*/
+        sharedPreferencesEditor.apply();
     }
 
     @Override
