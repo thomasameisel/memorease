@@ -1,6 +1,7 @@
 package com.memorease.memorease;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,8 +9,11 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
 /**
@@ -93,15 +97,24 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
 
     private void setNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
         if (!memoreaInfo.completed) {
-            final float timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
+            final long timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
             if (timeUntilNextAlarm < 0) {
                 holder.setSpecialMessage(memorizationReady);
             } else {
-                int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
-                if (minutesUntilNextAlarm <= 0) {
-                    minutesUntilNextAlarm = 1;
+                //final int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
+                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+                calendar.setTimeInMillis(timeUntilNextAlarm);
+                Log.d("time_until", Long.toString(calendar.getTimeInMillis()));
+                Log.d("time_until", calendar.toString());
+                if (calendar.get(Calendar.MONTH) > 0) {
+                    holder.setNextMemorization(calendar.get(Calendar.MONTH)+1, "month");
+                } else if (calendar.get(Calendar.DAY_OF_MONTH) > 1) {
+                    holder.setNextMemorization(calendar.get(Calendar.DAY_OF_MONTH)-1, "day");
+                } else if (calendar.get(Calendar.HOUR) > 0) {
+                    holder.setNextMemorization(calendar.get(Calendar.HOUR), "hour");
+                } else {
+                    holder.setNextMemorization(calendar.get(Calendar.MINUTE), "minute");
                 }
-                holder.setNextMemorization(minutesUntilNextAlarm);
             }
         } else {
             holder.setSpecialMessage("Completed!");
@@ -133,15 +146,17 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             this.title.setText(title);
         }
 
-        public void setNextMemorization(final int nextMemorizationDisplayed) {
+        public void setNextMemorization(final int time, final String timeUnit) {
             showSpecialMessage(false);
-            if (nextMemorizationDisplayed > 1) {
-                this.nextMemorization.setText(Integer.toString(nextMemorizationDisplayed) + " minutes");
-            } else if (nextMemorizationDisplayed == 1) {
-                this.nextMemorization.setText("1 minute");
+            String nextMemorizationText;
+            if (time > 1) {
+                nextMemorizationText = String.format("%d %s%s", time, timeUnit, "s");
+            } else if (time == 1) {
+                nextMemorizationText = String.format("1 %s", timeUnit);
             } else {
-                this.nextMemorization.setText("Less than 1 minute");
+                nextMemorizationText = String.format("Less than 1 %s", timeUnit);
             }
+            nextMemorization.setText(nextMemorizationText);
         }
 
         public void setSpecialMessage(final String specialMessage) {

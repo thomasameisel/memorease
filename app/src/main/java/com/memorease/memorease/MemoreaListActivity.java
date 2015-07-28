@@ -29,14 +29,12 @@ import java.util.UUID;
 public class MemoreaListActivity extends AppCompatActivity implements MemoreaDialog.OnAddMemoreaListener {
     private MemoreaListAdapter memoreaListAdapter;
     public static SharedPreferences sharedPreferences;
-    public static SharedPreferences.Editor sharedPreferencesEditor;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorea_list);
         sharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
-        sharedPreferencesEditor = sharedPreferences.edit();
         memoreaListAdapter = ((MemoreaListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_list)).getMemoreaListAdapter();
         Map<String,?> allKeys = sharedPreferences.getAll();
         if (allKeys != null) {
@@ -160,13 +158,15 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
             updateSharedPref(memoreaInfo);
             memoreaListAdapter.notifyDataSetChanged();
         }
-        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + ((long) memoreaInfo.getCurMemorization() * 60 * 1000), pendingIntent);
-        sharedPreferencesEditor.putLong(memoreaInfo.id.toString()+"_notification_time", Calendar.getInstance().getTimeInMillis()+((long) memoreaInfo.getCurMemorization() * 60 * 1000));
-        sharedPreferencesEditor.commit();*/
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + memoreaInfo.getCurMemorization(), pendingIntent);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putLong(memoreaInfo.id.toString()+"_notification_time", SystemClock.elapsedRealtime() + memoreaInfo.getCurMemorization());
+        sharedPreferencesEditor.commit();
         // debug
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
-        sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", Calendar.getInstance().getTimeInMillis() + 10 * 1000);
-        sharedPreferencesEditor.apply();
+        /*alarmManager.set(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime() + 10 * 1000, pendingIntent);
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", SystemClock.elapsedRealtime() + 10 * 1000);
+        sharedPreferencesEditor.apply();*/
     }
 
     @Override
@@ -181,6 +181,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     public void updateSharedPrefOnDelete(final MemoreaInfo deletedCard) {
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.remove(deletedCard.id.toString());
         sharedPreferencesEditor.apply();
     }
@@ -190,6 +191,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     private void updateSharedPref(final MemoreaInfo memoreaInfo) {
+        SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.putString(memoreaInfo.id.toString(), getJSONStringFromArray(memoreaInfo.getFields()).toString());
         sharedPreferencesEditor.apply();
     }

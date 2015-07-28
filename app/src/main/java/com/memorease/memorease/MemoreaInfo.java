@@ -1,6 +1,7 @@
 package com.memorease.memorease;
 
 import android.app.NotificationManager;
+import android.os.SystemClock;
 
 import java.util.Calendar;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class MemoreaInfo {
     boolean completed=false;
     int notificationId;
 
-    private int[] memorizationTimes = {2, 10, 60, 300, 1440, 7200, 36000, 172800};
+    private long[] memorizationTimes = {120000L, 600000L, 3600000L, 18000000L, 86400000L, 432000000L, 2160000000L, 13046400000L};
 
     public MemoreaInfo(final String title, final String question, final String answer, final String hint, final int memorizationLevel) {
         this.title = title;
@@ -55,14 +56,14 @@ public class MemoreaInfo {
     }
 
     public long getTimeUntilNextAlarm() {
-        return getTimeNextAlarm()-Calendar.getInstance().getTimeInMillis();
+        return getTimeNextAlarm()- SystemClock.elapsedRealtime();
     }
 
     private long getTimeNextAlarm() {
         return MemoreaListActivity.sharedPreferences.getLong(id.toString()+"_notification_time", 0);
     }
 
-    public int getCurMemorization() {
+    public long getCurMemorization() {
         return memorizationTimes[memorizationLevel];
     }
 }
