@@ -1,5 +1,6 @@
 package com.memorease.memorease;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +9,7 @@ import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,19 +27,39 @@ import java.util.UUID;
  * A placeholder fragment containing a simple view.
  */
 public class MemoreaListFragment extends Fragment implements AdapterView.OnItemClickListener {
+    public interface OnMemoreaListFragmentListener {
+        void setSupportActionBar(Toolbar view);
+        ActionBar getSupportActionBar();
+
+        void updateSharedPrefOnAdd(MemoreaInfo deletedCard);
+        void updateSharedPrefOnDelete(MemoreaInfo deletedCard);
+
+        void clearMemoreaNotification(MemoreaInfo deletedCard);
+        void openMemoreaInfoFragment(String[] info, int position);
+    }
+
     private MemoreaListAdapter memoreaListAdapter;
     private RecyclerView recyclerView;
     private BroadcastReceiver broadcastReceiver;
-    private SimpleDateFormat watchTime;
+    private OnMemoreaListFragmentListener listener;
 
     public MemoreaListFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        watchTime = new SimpleDateFormat("HH:mm");
+    public void onAttach(final Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnMemoreaListFragmentListener)activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + "must implement OnAddMemoreaListener");
+        }
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_memorea_list, container, false);
-        ((AppCompatActivity)getActivity()).setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
+        listener.setSupportActionBar((Toolbar) view.findViewById(R.id.toolbar));
+        listener.getSupportActionBar().setTitle(getResources().getString(R.string.app_name));
 
         recyclerView = initRecyclerView(view);
 
@@ -100,14 +121,14 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                ((MemoreaListActivity)getActivity()).updateSharedPrefOnAdd(deletedCard);
+                                listener.updateSharedPrefOnAdd(deletedCard);
                                 memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
                             }
                         })
                         .setActionTextColor(Color.RED)
                         .show();
-                ((MemoreaListActivity)getActivity()).updateSharedPrefOnDelete(deletedCard);
-                ((MemoreaListActivity)getActivity()).clearMemoreaNotification(deletedCard);
+                listener.updateSharedPrefOnDelete(deletedCard);
+                listener.clearMemoreaNotification(deletedCard);
                 memoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
             }
 
@@ -134,16 +155,12 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         return memoreaListAdapter;
     }
 
-    public void addMemoreaCard(final MemoreaInfo memoreaInfo) {
-        memoreaListAdapter.onItemAdd(memoreaInfo);
-    }
-
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
         if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.completed) {
-            ((MemoreaListActivity)getActivity()).clearMemoreaNotification(memoreaInfoClicked);
+            listener.clearMemoreaNotification(memoreaInfoClicked);
 
             Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
             memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
@@ -160,7 +177,7 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             info[3] = memoreaInfoClicked.answer;
             info[4] = memoreaInfoClicked.hint;
 
-            ((MemoreaListActivity) getActivity()).openMemoreaInfoFragment(info, position);
+            listener.openMemoreaInfoFragment(info, position);
         }
     }
 }

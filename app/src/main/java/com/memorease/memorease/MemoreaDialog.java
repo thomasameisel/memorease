@@ -24,7 +24,7 @@ import android.widget.EditText;
 public class MemoreaDialog extends DialogFragment {
     public interface OnAddMemoreaListener {
         void onAddMemoreaCard(MemoreaInfo memoreaInfo);
-        void onEditMemoreaCard(String[] updatedFields, int memoreaPosition);
+        void onEditMemoreaCard(String[] updatedFields);
     }
 
     private EditText title, question, answer, hint;
@@ -32,7 +32,7 @@ public class MemoreaDialog extends DialogFragment {
     private OnAddMemoreaListener memoreaListener;
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(final Activity activity) {
         super.onAttach(activity);
         try {
             memoreaListener = (OnAddMemoreaListener)activity;
@@ -42,7 +42,7 @@ public class MemoreaDialog extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -144,6 +144,6 @@ public class MemoreaDialog extends DialogFragment {
         updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
         updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
         updatedFields[4] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
-        memoreaListener.onEditMemoreaCard(updatedFields, getArguments().getInt("memorea_position"));
+        memoreaListener.onEditMemoreaCard(updatedFields);
     }
 }

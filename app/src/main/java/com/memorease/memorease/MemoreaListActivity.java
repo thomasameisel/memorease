@@ -26,9 +26,11 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
 
-public class MemoreaListActivity extends AppCompatActivity implements MemoreaDialog.OnAddMemoreaListener {
+public class MemoreaListActivity extends AppCompatActivity implements MemoreaDialog.OnAddMemoreaListener, MemoreaListFragment.OnMemoreaListFragmentListener, MemoreaInfoFragment.OnMemoreaInfoFragment{
     private MemoreaListAdapter memoreaListAdapter;
     public static SharedPreferences sharedPreferences;
+    private String[] memoreaViewedInfo;
+    private int memoreaViewedPosition;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -108,8 +110,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         final Bundle memoreaInfo = new Bundle();
         memoreaInfo.putString("dialog_title", getResources().getString(R.string.edit_memorea_title));
         memoreaInfo.putBoolean("is_editing", true);
-        memoreaInfo.putStringArray("edit_memorea_info", getMemoreaInfoFromFragment(getSupportFragmentManager().findFragmentByTag("fragment_memorea_info")));
-        memoreaInfo.putInt("memorea_position", getMemoreaPositionFromFragment(getSupportFragmentManager().findFragmentByTag("fragment_memorea_info")));
+        memoreaInfo.putStringArray("edit_memorea_info", memoreaViewedInfo);
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         final MemoreaDialog memoreaDialog = new MemoreaDialog();
@@ -117,20 +118,11 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         memoreaDialog.show(fragmentManager, null);
     }
 
-    private int getMemoreaPositionFromFragment(final Fragment fragment) {
-        return ((MemoreaInfoFragment)fragment).memoreaPosition;
-    }
-
-    private String[] getMemoreaInfoFromFragment(final Fragment fragment) {
-        return ((MemoreaInfoFragment)fragment).memoreaInfo;
-    }
-
     @Override
     public void onAddMemoreaCard(final MemoreaInfo memoreaInfo) {
         //create card using this info and add to memoreaList
-        final MemoreaListFragment memoreaListFragment = (MemoreaListFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_list);
         createNotification(false, memoreaInfo);
-        memoreaListFragment.addMemoreaCard(memoreaInfo);
+        memoreaListAdapter.onItemAdd(memoreaInfo);
         updateSharedPref(memoreaInfo);
     }
 
@@ -170,14 +162,14 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     @Override
-    public void onEditMemoreaCard(final String[] updatedFields, final int memoreaPosition) {
+    public void onEditMemoreaCard(final String[] updatedFields) {
         MemoreaInfoFragment memoreaInfoFragment = (MemoreaInfoFragment)getSupportFragmentManager().findFragmentByTag("fragment_memorea_info");
         memoreaInfoFragment.updateFieldsFromEdit(updatedFields);
 
         MemoreaInfo memoreaToUpdate = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(updatedFields[0]));
         memoreaToUpdate.updateFields(updatedFields);
         updateSharedPref(memoreaToUpdate);
-        memoreaListAdapter.notifyItemChanged(memoreaPosition);
+        memoreaListAdapter.notifyItemChanged(memoreaViewedPosition);
     }
 
     public void updateSharedPrefOnDelete(final MemoreaInfo deletedCard) {
@@ -205,7 +197,9 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         // Create new fragment and transaction
         final Bundle memoreaInfo = new Bundle();
         memoreaInfo.putStringArray("memorea_info", info);
-        memoreaInfo.putInt("memorea_position", position);
+
+        memoreaViewedInfo = info;
+        memoreaViewedPosition = position;
 
         final Fragment infoFragment = new MemoreaInfoFragment();
         infoFragment.setArguments(memoreaInfo);

@@ -101,7 +101,6 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             if (timeUntilNextAlarm < 0) {
                 holder.setSpecialMessage(memorizationReady);
             } else {
-                //final int minutesUntilNextAlarm = (int) timeUntilNextAlarm / 60000;
                 Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
                 calendar.setTimeInMillis(timeUntilNextAlarm);
                 Log.d("time_until", Long.toString(calendar.getTimeInMillis()));
