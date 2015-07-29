@@ -22,11 +22,24 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.widget.TextView;
 
 /**
- * Created by Tommy on 7/22/2015.
+ * Popup dialog fragment for either adding or editing a memorea<br>
+ * Requires an Extra String dialog_title and boolean is_editing<br>
+ * If is_editing is true, also requires String array of the memorea's information to pre-fill in the form
  */
 public class MemoreaDialog extends DialogFragment {
+    /**
+     * Listener for the result of either adding or editing a memorea
+     */
     public interface OnAddMemoreaListener {
+        /**
+         * Creates card using this info, adds it to memoreaList, and creates a notification
+         * @param memoreaInfo Memorea created
+         */
         void onAddMemoreaCard(MemoreaInfo memoreaInfo);
+        /**
+         * Edits a memorea card and updates the notification
+         * @param updatedFields String array of length 5 with the id, title, question, answer, and hint
+         */
         void onEditMemoreaCard(String[] updatedFields);
     }
 
@@ -107,7 +120,6 @@ public class MemoreaDialog extends DialogFragment {
                 return false;
             }
         }
-
         return true;
     }
 

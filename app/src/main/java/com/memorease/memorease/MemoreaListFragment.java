@@ -24,17 +24,30 @@ import android.widget.AdapterView;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment that displays the memoreas in a RecyclerView
  */
 public class MemoreaListFragment extends Fragment implements AdapterView.OnItemClickListener {
+    /**
+     * Listener for various methods in the activity
+     */
     public interface OnMemoreaListFragmentListener {
+        /**
+         * Sets the activity's support action bar as the collapsible action bar
+         * @param view Toolbar view in fragment
+         */
         void setSupportActionBar(Toolbar view);
+        /**
+         * Gets the support action bar of the activity
+         */
         ActionBar getSupportActionBar();
 
+        /**
+         * Called when a memorea is pressed, opens that memorea's info fragment
+         */
         void openMemoreaInfoFragment(String[] info, int position);
-        int getNumNotifications();
 
-        void setNumNotifications(int numNotifications);
+        int getNumActiveNotifications();
+        void setNumActiveNotifications(int numNotifications);
     }
 
     private MemoreaListAdapter memoreaListAdapter;
@@ -76,18 +89,18 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             @Override
             public void onReceive(Context ctx, Intent intent) {
                 if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                    memoreaListAdapter.notifyDataSetChanged();
+                    memoreaListAdapter.notifyAllItemsChanged();
                 }
             }
         };
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        memoreaListAdapter.notifyDataSetChanged();
+        memoreaListAdapter.notifyAllItemsChanged();
         clearNotification();
     }
 
     private void clearNotification() {
-        listener.setNumNotifications(0);
+        listener.setNumActiveNotifications(0);
         NotificationManager notificationManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
     }
@@ -127,13 +140,13 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                MemoreaListActivity.updateSharedPref(deletedCard);
+                                MemoreaListActivity.addMemoreaSharedPref(deletedCard);
                                 memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
                             }
                         })
                         .setActionTextColor(Color.RED)
                         .show();
-                MemoreaListActivity.updateSharedPrefOnDelete(deletedCard);
+                MemoreaListActivity.removeMemoreaSharedPref(deletedCard);
                 final Intent intent = new Intent(getActivity(), AlarmReceiver.class);
                 final PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), deletedCard.notificationGeneratorId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 final AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
@@ -141,7 +154,7 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                     alarmManager.cancel(pendingIntent);
                     pendingIntent.cancel();
                 }
-                if (deletedCard.getTimeUntilNextAlarm() < 0 && listener.getNumNotifications() == 1) {
+                if (deletedCard.getTimeUntilNextAlarm() < 0 && listener.getNumActiveNotifications() == 1) {
                     clearNotification();
                 }
                 memoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
@@ -170,6 +183,9 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         return memoreaListAdapter;
     }
 
+    /**
+     * Either opens the info fragment or starts the memorization screen activity based on if it is time for the memorea memorization
+     */
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);

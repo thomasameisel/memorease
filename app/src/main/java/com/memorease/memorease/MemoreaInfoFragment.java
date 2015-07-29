@@ -15,11 +15,21 @@ import android.widget.TextView;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment that displays the memorea information in a grid
  */
 public class MemoreaInfoFragment extends Fragment {
+    /**
+     * Listener for setting the activity's action bar as the collapsible action bar
+     */
     public interface OnMemoreaInfoFragment {
+        /**
+         * Sets the activity's support action bar as the collapsible action bar
+         * @param view Toolbar view in fragment
+         */
         void setSupportActionBar(Toolbar view);
+        /**
+         * Gets the support action bar of the activity
+         */
         ActionBar getSupportActionBar();
     }
 
@@ -48,6 +58,10 @@ public class MemoreaInfoFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Updates the memorea information after an edit
+     * @param updatedFields String array of length 5
+     */
     public void updateFieldsFromEdit(final String[] updatedFields) {
         updateFields(getView(), updatedFields);
     }

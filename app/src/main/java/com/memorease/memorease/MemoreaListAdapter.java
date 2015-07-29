@@ -1,7 +1,6 @@
 package com.memorease.memorease;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 /**
- * Created by Tommy on 7/22/2015.
+ * Adapter for the RecyclerView
  */
 public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.MemoreaViewHolder> {
     private final List<MemoreaInfo> memoreaList;
@@ -44,31 +43,50 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         setNextMemorizationTime("Memorization ready!", memoreaInfo, holder);
     }
 
+    /**
+     * Returns the number of memoreas
+     */
     @Override
     public int getItemCount() {
         return memoreaList.size();
     }
 
+    /**
+     * Swaps memoreas and notifies
+     */
     public void onItemMove(final int from, final int to) {
         Collections.swap(memoreaList, from, to);
         notifyItemMoved(from, to);
     }
 
+    /**
+     * Deletes a memorea
+     */
     public void onItemDismiss(final int position) {
         memoreaList.remove(position);
         notifyItemRemoved(position);
     }
 
-    public void addAll(ArrayList<MemoreaInfo> memoreaInfoList) {
+    /**
+     * Adds entire ArrayList to the memorea list
+     * @param memoreaInfoList ArrayList of MemoreaInfo to be added
+     */
+    public void addAll(final ArrayList<MemoreaInfo> memoreaInfoList) {
         for (MemoreaInfo memoreaInfo : memoreaInfoList) {
             onItemAdd(memoreaInfo);
         }
     }
 
+    /**
+     * Adds a memorea to the bottom of the memorea list
+     */
     public void onItemAdd(final MemoreaInfo memoreaInfo) {
         onItemAdd(memoreaInfo, getItemCount());
     }
 
+    /**
+     * Adds a memorea to the memorea list in the position specified
+     */
     public void onItemAdd(final MemoreaInfo memoreaInfo, final int position) {
         memoreaList.add(position, memoreaInfo);
         notifyItemInserted(position);
@@ -81,7 +99,11 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
     }
 
-    public MemoreaInfo getMemoreaByUUID(UUID uuid) {
+    /**
+     * Returns the memorea with the id field matching the parameter<br>
+     * If none exist, returns null
+     */
+    public MemoreaInfo getMemoreaByUUID(final UUID uuid) {
         for (MemoreaInfo memoreaInfo : memoreaList) {
             if (uuid.equals(memoreaInfo.id)) {
                 return memoreaInfo;
@@ -91,6 +113,9 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         return null;
     }
 
+    /**
+     * Returns the memorea at the specified position
+     */
     public MemoreaInfo getItem(final int position) {
         return memoreaList.get(position);
     }
@@ -103,8 +128,6 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             } else {
                 Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
                 calendar.setTimeInMillis(timeUntilNextAlarm);
-                Log.d("time_until", Long.toString(calendar.getTimeInMillis()));
-                Log.d("time_until", calendar.toString());
                 if (calendar.get(Calendar.MONTH) > 0) {
                     holder.setNextMemorization(calendar.get(Calendar.MONTH)+1, "month");
                 } else if (calendar.get(Calendar.DAY_OF_MONTH) > 1) {
@@ -120,31 +143,59 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
     }
 
+    /**
+     * Calls notifyItemChanged(position) for every position in the memorea list
+     */
+    public void notifyAllItemsChanged() {
+        for (int i = 0; i < memoreaList.size(); ++i) {
+            notifyItemChanged(i);
+        }
+    }
+
+    /**
+     * Binds the memorea to its view
+     */
     public static class MemoreaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title, nextMemorizationLabel, nextMemorization, specialMessage;
         private MemoreaListAdapter memoreaListAdapter;
 
-        public MemoreaViewHolder(final View v, final MemoreaListAdapter memoreaListAdapter) {
-            super(v);
-            v.findViewById(R.id.card_view_memorea).setOnClickListener(this);
+        /**
+         * Constructor for MemoreaViewHolder
+         * @param memoreaView View corresponds to the memorea
+         * @param memoreaListAdapter RecyclerView Adapter for the memorea list
+         */
+        public MemoreaViewHolder(final View memoreaView, final MemoreaListAdapter memoreaListAdapter) {
+            super(memoreaView);
+            memoreaView.findViewById(R.id.card_view_memorea).setOnClickListener(this);
 
-            title = (TextView) v.findViewById(R.id.text_view_memorea_title);
-            nextMemorization = (TextView) v.findViewById(R.id.text_view_next_memorization);
-            nextMemorizationLabel = (TextView) v.findViewById(R.id.text_view_next_memorization_label);
-            specialMessage = (TextView) v.findViewById(R.id.text_view_special_info);
+            title = (TextView) memoreaView.findViewById(R.id.text_view_memorea_title);
+            nextMemorization = (TextView) memoreaView.findViewById(R.id.text_view_next_memorization);
+            nextMemorizationLabel = (TextView) memoreaView.findViewById(R.id.text_view_next_memorization_label);
+            specialMessage = (TextView) memoreaView.findViewById(R.id.text_view_special_info);
 
             this.memoreaListAdapter = memoreaListAdapter;
         }
 
+        /**
+         * Calls onItemHolderClick for this memorea item
+         */
         @Override
         public void onClick(final View v) {
             memoreaListAdapter.onItemHolderClick(this);
         }
 
+        /**
+         * Sets the title in the view of the memorea
+         */
         public void setTitle(String title) {
             this.title.setText(title);
         }
 
+        /**
+         * Sets the time remaining until the next memorization in the view of the memorea
+         * @param time Time remaining until the next memorization
+         * @param timeUnit Unit of the time remaining until the next memorization
+         */
         public void setNextMemorization(final int time, final String timeUnit) {
             showSpecialMessage(false);
             String nextMemorizationText;
@@ -158,11 +209,20 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
             nextMemorization.setText(nextMemorizationText);
         }
 
+        /**
+         * Sets the special message in the view of the memorea
+         * @param specialMessage Special message (either "Memorization ready!" and "Completed!")
+         */
         public void setSpecialMessage(final String specialMessage) {
             showSpecialMessage(true);
             this.specialMessage.setText(specialMessage);
         }
 
+        /**
+         * Enables or disables the special message view
+         * @param specialMessageVisible if true, the special message is shown<br>
+         *                              if false, the time remaining message is shown
+         */
         public void showSpecialMessage(final boolean specialMessageVisible) {
             if (specialMessageVisible) {
                 nextMemorization.setVisibility(View.INVISIBLE);

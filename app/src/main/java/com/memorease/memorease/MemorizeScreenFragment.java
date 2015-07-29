@@ -19,7 +19,7 @@ import com.memorease.memorease.views.CircleAngleAnimation;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment that shows the question and prompts the user to ask for a hint or go to the answer
  */
 public class MemorizeScreenFragment extends Fragment {
     private boolean gaveHint = false;
@@ -66,11 +66,18 @@ public class MemorizeScreenFragment extends Fragment {
         return view;
     }
 
-    public void setFields(final Bundle extras) {
-        ((TextView)getView().findViewById(R.id.text_view_question)).setText(extras.getString("question"));
-        ((TextView)getView().findViewById(R.id.text_view_hint)).setText(extras.getString("hint"));
+    /**
+     * Sets the question and hint fields, must be called after onCreateView
+     * @param extras Must have Extra String question and String hint
+     */
+    public void setFields(final View view, final Bundle extras) {
+        ((TextView)view.findViewById(R.id.text_view_question)).setText(extras.getString("question"));
+        ((TextView)view.findViewById(R.id.text_view_hint)).setText(extras.getString("hint"));
     }
 
+    /**
+     * Shows the user the hint
+     */
     public void giveHint() {
         if (!gaveHint) {
             final AnimatorSet animationSet = new AnimatorSet();

@@ -1,7 +1,6 @@
 package com.memorease.memorease;
 
 import android.app.AlarmManager;
-import android.app.NotificationManager;
 import android.support.v4.app.DialogFragment;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -21,17 +20,19 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Main activity<br>
+ * Holds the memorea list fragment and memorea info fragment
+ */
 public class MemoreaListActivity extends AppCompatActivity implements MemoreaDialog.OnAddMemoreaListener, MemoreaListFragment.OnMemoreaListFragmentListener, MemoreaInfoFragment.OnMemoreaInfoFragment{
     private MemoreaListAdapter memoreaListAdapter;
     public static SharedPreferences sharedPreferences;
     private String[] memoreaViewedInfo;
     private int memoreaViewedPosition;
-    public int numNotifications;
+    public int numActiveNotifications;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -55,16 +56,19 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
                 } else {
                     if (useNextTime) {
                         ++memoreaInfo.memorizationLevel;
-                        updateSharedPref(memoreaInfo);
+                        addMemoreaSharedPref(memoreaInfo);
                         memoreaListAdapter.notifyDataSetChanged();
                     }
                     createNotification(true, memoreaInfo);
                 }
             }
-            numNotifications = 0;
+            numActiveNotifications = 0;
         }
     }
 
+    /**
+     * Creates an ArrayList of memoreas from the shared preferences
+     */
     private ArrayList<MemoreaInfo> initializeListFromSharedPref(Map<String, ?> allKeys) {
         final ArrayList<MemoreaInfo> memoreInfoCards = new ArrayList<>(allKeys.size());
         for (Map.Entry<String,?> entry : allKeys.entrySet()) {
@@ -79,16 +83,20 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         return memoreInfoCards;
     }
 
+    /**
+     * Initializes a memorea from the JSONArray entry in shared preferences<br>
+     * Returns null if there is some type of error
+     */
     private MemoreaInfo initializeMemoreaFromSharedPref(final Map.Entry<String, ?> entry) {
         MemoreaInfo memoreaInfo = null;
         try {
             String[] fields = getStringArrayFromJSON(new JSONArray((String)entry.getValue()));
-            memoreaInfo = new MemoreaInfo(fields[0], fields[1], fields[2], fields[3], Integer.parseInt(fields[4]));
-            memoreaInfo.notificationGeneratorId = Integer.parseInt(fields[5]);
-            memoreaInfo.id = UUID.fromString(entry.getKey());
-            return memoreaInfo;
-        } catch (final JSONException e) {
-            e.printStackTrace();
+            if (fields.length == 6) {
+                memoreaInfo = new MemoreaInfo(fields[0], fields[1], fields[2], fields[3], Integer.parseInt(fields[4]));
+                memoreaInfo.notificationGeneratorId = Integer.parseInt(fields[5]);
+                memoreaInfo.id = UUID.fromString(entry.getKey());
+            }
+        } finally {
             return memoreaInfo;
         }
     }
@@ -104,6 +112,9 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Opens the dialog fragment to add a memorea
+     */
     public void addMemorea(final View view) {
         // dialog to add memorea
         final Bundle memoreaInfo = new Bundle();
@@ -116,25 +127,27 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         memoreaDialog.show(fragmentManager, null);
     }
 
+    /**
+     * Opens the dialog fragment to edit a memorea
+     */
     public void editMemorea(final View view) {
         // dialog to edit memorea
-        final Bundle memoreaInfo = new Bundle();
-        memoreaInfo.putString("dialog_title", getResources().getString(R.string.edit_memorea_title));
-        memoreaInfo.putBoolean("is_editing", true);
-        memoreaInfo.putStringArray("edit_memorea_info", memoreaViewedInfo);
+        final Bundle memoreaInfoBundle = new Bundle();
+        memoreaInfoBundle.putString("dialog_title", getResources().getString(R.string.edit_memorea_title));
+        memoreaInfoBundle.putBoolean("is_editing", true);
+        memoreaInfoBundle.putStringArray("edit_memorea_info", memoreaViewedInfo);
 
         final FragmentManager fragmentManager = getSupportFragmentManager();
         final MemoreaDialog memoreaDialog = new MemoreaDialog();
-        memoreaDialog.setArguments(memoreaInfo);
+        memoreaDialog.setArguments(memoreaInfoBundle);
         memoreaDialog.show(fragmentManager, null);
     }
 
     @Override
     public void onAddMemoreaCard(final MemoreaInfo memoreaInfo) {
-        //create card using this info and add to memoreaList
         createNotification(true, memoreaInfo);
         memoreaListAdapter.onItemAdd(memoreaInfo);
-        updateSharedPref(memoreaInfo);
+        addMemoreaSharedPref(memoreaInfo);
     }
 
     private boolean checkIfFinishedLastTime(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
@@ -145,7 +158,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         final int notificationGeneratorId;
         final long timeUntilMemorization;
         if (newNotification) {
-            ++numNotifications;
+            ++numActiveNotifications;
             notificationGeneratorId = (int)(Calendar.getInstance().getTimeInMillis() & 0xfffffff);
             memoreaInfo.notificationGeneratorId = notificationGeneratorId;
             timeUntilMemorization = SystemClock.elapsedRealtime() + memoreaInfo.getCurMemorization();
@@ -158,7 +171,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         }
 
         final Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-        if (numNotifications > 1) {
+        if (numActiveNotifications > 1) {
             alarmIntent.putExtra("multiple_notifications", true);
         } else {
             alarmIntent.putExtra("multiple_notifications", false);
@@ -188,32 +201,46 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         MemoreaInfo memoreaToUpdate = memoreaListAdapter.getMemoreaByUUID(UUID.fromString(updatedFields[0]));
         memoreaToUpdate.updateFields(updatedFields);
         createNotification(false, memoreaToUpdate);
-        updateSharedPref(memoreaToUpdate);
+        addMemoreaSharedPref(memoreaToUpdate);
         memoreaListAdapter.notifyItemChanged(memoreaViewedPosition);
     }
 
-    public static void updateSharedPrefOnDelete(final MemoreaInfo deletedCard) {
+    /**
+     * Removes the memorea from shared preferences
+     * @param deletedMemorea Memorea that needs to have its information deleted from shared preferences
+     */
+    public static void removeMemoreaSharedPref(final MemoreaInfo deletedMemorea) {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.remove(deletedCard.id.toString());
+        sharedPreferencesEditor.remove(deletedMemorea.id.toString());
         sharedPreferencesEditor.apply();
     }
 
-    public static void updateSharedPref(final MemoreaInfo memoreaInfo) {
+    /**
+     * Adds the memorea to shared preferences
+     * @param addedMemorea Memorea that needs to have its information added to shared preferences
+     */
+    public static void addMemoreaSharedPref(final MemoreaInfo addedMemorea) {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-        sharedPreferencesEditor.putString(memoreaInfo.id.toString(), getJSONStringFromArray(memoreaInfo.getFields()).toString());
+        sharedPreferencesEditor.putString(addedMemorea.id.toString(), getJSONStringFromArray(addedMemorea.getFields()).toString());
         sharedPreferencesEditor.apply();
     }
 
+    /**
+     * Changes the current fragment from the memorea list fragment to the memorea info fragment
+     * @param info Information of memorea that will be displayed in the fragment<br>
+     *             String array of length 5 with the id, title, question, answer, and hint
+     * @param position Position of the memorea in the memorea list
+     */
     public void openMemoreaInfoFragment(final String[] info, final int position) {
         // Create new fragment and transaction
-        final Bundle memoreaInfo = new Bundle();
-        memoreaInfo.putStringArray("memorea_info", info);
+        final Bundle memoreaInfoBundle = new Bundle();
+        memoreaInfoBundle.putStringArray("memorea_info", info);
 
         memoreaViewedInfo = info;
         memoreaViewedPosition = position;
 
         final Fragment infoFragment = new MemoreaInfoFragment();
-        infoFragment.setArguments(memoreaInfo);
+        infoFragment.setArguments(memoreaInfoBundle);
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
                 android.R.anim.fade_in, android.R.anim.fade_out);
@@ -223,15 +250,19 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     @Override
-    public int getNumNotifications() {
-        return numNotifications;
+    public int getNumActiveNotifications() {
+        return numActiveNotifications;
     }
 
     @Override
-    public void setNumNotifications(int numNotifications) {
-        this.numNotifications = numNotifications;
+    public void setNumActiveNotifications(int numActiveNotifications) {
+        this.numActiveNotifications = numActiveNotifications;
     }
 
+    /**
+     * Generates a JSON array from a String array
+     * @param values String array to convert to JSON
+     */
     public static JSONArray getJSONStringFromArray(final String[] values) {
         JSONArray array = new JSONArray();
         for (String value : values) {
@@ -240,15 +271,18 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         return array;
     }
 
+    /**
+     * Generates a String array from a JSON array
+     * @param array JSON array to convert to a String array
+     */
     public static String[] getStringArrayFromJSON(final JSONArray array) {
-        String[] stringArray = new String[array.length()];
+        final String[] stringArray = new String[array.length()];
         try {
             for (int i = 0; i < array.length(); ++i) {
                 stringArray[i] = array.getString(i);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } finally {
+            return stringArray;
         }
-        return stringArray;
     }
 }
