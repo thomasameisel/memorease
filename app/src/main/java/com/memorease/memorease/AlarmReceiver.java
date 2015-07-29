@@ -1,6 +1,7 @@
 package com.memorease.memorease;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,22 +20,28 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, final Intent intent) {
         final String title = intent.getStringExtra("title");
-        final int notificationId = intent.getIntExtra("notification_id", (int)Calendar.getInstance().getTimeInMillis());
 
-        Intent notIntent = new Intent (context, MemorizeScreenActivity.class);
-        notIntent.putExtras(intent);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        NotificationManagerCompat manager = NotificationManagerCompat.from(context);
+        final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        final Notification.Builder builder = new Notification.Builder(context);
+        if (intent.getBooleanExtra("multiple_notifications", true)) {
+            final Intent notIntent = new Intent (context, MemoreaListActivity.class);
+            final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            builder.setContentIntent(contentIntent)
+                    .setContentTitle("Memorease")
+                    .setContentText("Muliple memorizations ready")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(true);
+        } else {
+            final Intent notIntent = new Intent (context, MemorizeScreenActivity.class);
+            notIntent.putExtras(intent);
+            final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            builder.setContentIntent(contentIntent)
+                    .setContentTitle("Memorease")
+                    .setContentText(title + " memorea is ready for memorization")
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(true);
+        }
 
-        //Generate a notification with just short text and small icon
-        NotificationCompat.Builder builder = new NotificationCompat.Builder (context)
-                .setContentIntent(contentIntent)
-                .setContentTitle("New memorization ready!")
-                .setContentText(title + " memorea is ready for memorization")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true);
-
-        Notification notification = builder.build();
-        manager.notify(notificationId, notification);
+        manager.notify(0, builder.build());
     }
 }

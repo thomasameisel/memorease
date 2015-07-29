@@ -108,11 +108,11 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
                 if (calendar.get(Calendar.MONTH) > 0) {
                     holder.setNextMemorization(calendar.get(Calendar.MONTH)+1, "month");
                 } else if (calendar.get(Calendar.DAY_OF_MONTH) > 1) {
-                    holder.setNextMemorization(calendar.get(Calendar.DAY_OF_MONTH)-1, "day");
+                    holder.setNextMemorization(calendar.get(Calendar.DAY_OF_MONTH), "day");
                 } else if (calendar.get(Calendar.HOUR) > 0) {
-                    holder.setNextMemorization(calendar.get(Calendar.HOUR), "hour");
+                    holder.setNextMemorization(calendar.get(Calendar.HOUR)+1, "hour");
                 } else {
-                    holder.setNextMemorization(calendar.get(Calendar.MINUTE), "minute");
+                    holder.setNextMemorization(calendar.get(Calendar.MINUTE)+1, "minute");
                 }
             }
         } else {

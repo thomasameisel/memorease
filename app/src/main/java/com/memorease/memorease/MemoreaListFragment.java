@@ -1,6 +1,9 @@
 package com.memorease.memorease;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
-import java.text.SimpleDateFormat;
-import java.util.UUID;
-
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,11 +31,10 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         void setSupportActionBar(Toolbar view);
         ActionBar getSupportActionBar();
 
-        void updateSharedPrefOnAdd(MemoreaInfo deletedCard);
-        void updateSharedPrefOnDelete(MemoreaInfo deletedCard);
-
-        void clearMemoreaNotification(MemoreaInfo deletedCard);
         void openMemoreaInfoFragment(String[] info, int position);
+        int getNumNotifications();
+
+        void setNumNotifications(int numNotifications);
     }
 
     private MemoreaListAdapter memoreaListAdapter;
@@ -84,6 +83,13 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
 
         getActivity().registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         memoreaListAdapter.notifyDataSetChanged();
+        clearNotification();
+    }
+
+    private void clearNotification() {
+        listener.setNumNotifications(0);
+        NotificationManager notificationManager = (NotificationManager)getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
     }
 
     @Override
@@ -121,14 +127,23 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
                         .setAction("Undo", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                listener.updateSharedPrefOnAdd(deletedCard);
+                                MemoreaListActivity.updateSharedPref(deletedCard);
                                 memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
                             }
                         })
                         .setActionTextColor(Color.RED)
                         .show();
-                listener.updateSharedPrefOnDelete(deletedCard);
-                listener.clearMemoreaNotification(deletedCard);
+                MemoreaListActivity.updateSharedPrefOnDelete(deletedCard);
+                final Intent intent = new Intent(getActivity(), AlarmReceiver.class);
+                final PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), deletedCard.notificationGeneratorId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                final AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+                if (pendingIntent != null) {
+                    alarmManager.cancel(pendingIntent);
+                    pendingIntent.cancel();
+                }
+                if (deletedCard.getTimeUntilNextAlarm() < 0 && listener.getNumNotifications() == 1) {
+                    clearNotification();
+                }
                 memoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
             }
 
@@ -160,8 +175,6 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
         final MemoreaInfo memoreaInfoClicked = memoreaListAdapter.getItem(position);
 
         if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.completed) {
-            listener.clearMemoreaNotification(memoreaInfoClicked);
-
             Intent memorizeScreenIntent = new Intent (getActivity(), MemorizeScreenActivity.class);
             memorizeScreenIntent.putExtra("title", memoreaInfoClicked.title);
             memorizeScreenIntent.putExtra("question", memoreaInfoClicked.question);

@@ -16,8 +16,8 @@ public class MemoreaInfo {
     String hint;
     int memorizationLevel;
     UUID id;
+    int notificationGeneratorId;
     boolean completed=false;
-    int notificationId;
 
     private long[] memorizationTimes = {120000L, 600000L, 3600000L, 18000000L, 86400000L, 432000000L, 2160000000L, 13046400000L};
 
@@ -42,12 +42,13 @@ public class MemoreaInfo {
     }
 
     public String[] getFields() {
-        String[] fields = new String[5];
+        String[] fields = new String[6];
         fields[0] = title;
         fields[1] = question;
         fields[2] = answer;
         fields[3] = hint;
         fields[4] = Integer.toString(memorizationLevel);
+        fields[5] = Integer.toString(notificationGeneratorId);
         return fields;
     }
 
@@ -59,7 +60,7 @@ public class MemoreaInfo {
         return getTimeNextAlarm()- SystemClock.elapsedRealtime();
     }
 
-    private long getTimeNextAlarm() {
+    public long getTimeNextAlarm() {
         return MemoreaListActivity.sharedPreferences.getLong(id.toString()+"_notification_time", 0);
     }
 

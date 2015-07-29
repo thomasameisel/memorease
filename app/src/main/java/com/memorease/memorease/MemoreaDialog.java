@@ -123,7 +123,6 @@ public class MemoreaDialog extends DialogFragment {
                 final Drawable wrappedDrawable = DrawableCompat.wrap(originalDrawable);
                 DrawableCompat.setTintList(wrappedDrawable, ColorStateList.valueOf(Color.RED));
                 field.setBackground(wrappedDrawable);
-                //field.getBackground().setColorFilter(Color.parseColor("#B7B2B0"), PorterDuff.Mode.SRC_OVER);
             }
         }
     }
