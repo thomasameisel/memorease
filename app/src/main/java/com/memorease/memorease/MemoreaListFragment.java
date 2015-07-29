@@ -136,16 +136,18 @@ public class MemoreaListFragment extends Fragment implements AdapterView.OnItemC
             public void onSwiped(final RecyclerView.ViewHolder viewHolder, final int swipeDir) {
                 final MemoreaInfo deletedCard = memoreaListAdapter.getItem(viewHolder.getAdapterPosition());
                 final int deletedCardPosition = viewHolder.getAdapterPosition();
-                Snackbar.make(getView().findViewById(R.id.fragment_memorea_list), "Deleted the " + memoreaListAdapter.getItem(viewHolder.getAdapterPosition()).title + " Memorea", Snackbar.LENGTH_LONG)
-                        .setAction("Undo", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                MemoreaListActivity.addMemoreaSharedPref(deletedCard);
-                                memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
-                            }
-                        })
-                        .setActionTextColor(Color.RED)
-                        .show();
+                Snackbar.make(getView().findViewById(R.id.fragment_memorea_list),
+                        String.format("Deleted the %s Memorea", memoreaListAdapter.getItem(viewHolder.getAdapterPosition()).title),
+                        Snackbar.LENGTH_LONG)
+                                .setAction("Undo", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        MemoreaListActivity.addMemoreaSharedPref(deletedCard);
+                                        memoreaListAdapter.onItemAdd(deletedCard, deletedCardPosition);
+                                    }
+                                })
+                                .setActionTextColor(Color.RED)
+                                .show();
                 MemoreaListActivity.removeMemoreaSharedPref(deletedCard);
                 final Intent intent = new Intent(getActivity(), AlarmReceiver.class);
                 final PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), deletedCard.notificationGeneratorId, intent, PendingIntent.FLAG_UPDATE_CURRENT);

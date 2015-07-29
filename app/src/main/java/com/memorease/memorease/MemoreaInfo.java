@@ -25,7 +25,7 @@ public class MemoreaInfo {
      * Creates a new memorea
      * @param title Title of the memorea
      * @param question Question of the memorea
-     * @param hint Hint of the memorea. This is not required
+     * @param hint Hint of the memorea. If user does not enter this value, set it to empty string
      * @param memorizationLevel Index of the memorization, milliseconds in memorizationTimes
      */
     public MemoreaInfo(final String title, final String question, final String answer, final String hint, final int memorizationLevel) {
@@ -87,7 +87,7 @@ public class MemoreaInfo {
      * Gets the millseconds of the next memorization time since the epoch
      */
     public long getTimeNextAlarm() {
-        return MemoreaListActivity.sharedPreferences.getLong(id.toString()+"_notification_time", 0);
+        return MemoreaListActivity.sharedPreferences.getLong(String.format("%s_notification_time", id.toString()), 0);
     }
 
     /**

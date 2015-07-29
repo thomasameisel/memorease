@@ -163,7 +163,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
             memoreaInfo.notificationGeneratorId = notificationGeneratorId;
             timeUntilMemorization = SystemClock.elapsedRealtime() + memoreaInfo.getCurMemorization();
             final SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
-            sharedPreferencesEditor.putLong(memoreaInfo.id.toString() + "_notification_time", timeUntilMemorization);
+            sharedPreferencesEditor.putLong(String.format("%s_notification_time", memoreaInfo.id.toString()), timeUntilMemorization);
             sharedPreferencesEditor.commit();
         } else {
             notificationGeneratorId = memoreaInfo.notificationGeneratorId;
@@ -212,6 +212,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     public static void removeMemoreaSharedPref(final MemoreaInfo deletedMemorea) {
         SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
         sharedPreferencesEditor.remove(deletedMemorea.id.toString());
+        sharedPreferencesEditor.remove(String.format("%s_notification_time", deletedMemorea.id.toString()));
         sharedPreferencesEditor.apply();
     }
 
