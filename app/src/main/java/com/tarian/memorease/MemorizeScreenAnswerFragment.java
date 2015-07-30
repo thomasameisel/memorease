@@ -1,4 +1,4 @@
-package com.memorease.memorease;
+package com.tarian.memorease;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

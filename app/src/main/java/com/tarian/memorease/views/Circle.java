@@ -1,20 +1,15 @@
-package com.memorease.memorease.views;
+package com.tarian.memorease.views;
 
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.memorease.memorease.R;
+import com.tarian.memorease.R;
 
 public class Circle extends View {
 

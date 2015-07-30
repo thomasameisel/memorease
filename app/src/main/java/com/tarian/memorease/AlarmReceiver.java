@@ -1,4 +1,4 @@
-package com.memorease.memorease;
+package com.tarian.memorease;
 
 import android.app.Notification;
 import android.app.NotificationManager;

@@ -33,7 +33,7 @@
     </android.support.design.widget.AppBarLayout>
     <fragment
         android:id="@+id/fragment_memorize_screen"
-        android:name="com.memorease.memorease.MemorizeScreenFragment"
+        android:name="com.tarian.memorease.MemorizeScreenFragment"
         tools:layout="@layout/fragment_memorize_screen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

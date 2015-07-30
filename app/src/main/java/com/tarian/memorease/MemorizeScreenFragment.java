@@ -1,4 +1,4 @@
-package com.memorease.memorease;
+package com.tarian.memorease;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -13,8 +13,8 @@ import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.memorease.memorease.views.Circle;
-import com.memorease.memorease.views.CircleAngleAnimation;
+import com.tarian.memorease.views.Circle;
+import com.tarian.memorease.views.CircleAngleAnimation;
 
 
 /**

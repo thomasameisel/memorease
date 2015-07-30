@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.memorease.memorease.MemorizeScreenFragment"
+    tools:context="com.tarian.memorease.MemorizeScreenFragment"
     android:background="@color/background_material_light">
 
     <TextView
@@ -26,7 +26,7 @@
         android:maxLines="3"
         android:ellipsize="end"
         android:alpha="0"/>
-    <com.memorease.memorease.views.Circle
+    <com.tarian.memorease.views.Circle
         android:id="@+id/circle"
         android:layout_width="50dp"
         android:layout_height="50dp"

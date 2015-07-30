@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.memorease.memorease.MemorizeScreenAnswerFragment"
+    tools:context="com.tarian.memorease.MemorizeScreenAnswerFragment"
     android:background="@color/background_material_light"
     android:clickable="true">
 

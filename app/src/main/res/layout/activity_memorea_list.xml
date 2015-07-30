@@ -8,7 +8,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment_memorea_list"
-        android:name="com.memorease.memorease.MemoreaListFragment"
+        android:name="com.tarian.memorease.MemoreaListFragment"
         tools:layout="@layout/fragment_memorea_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

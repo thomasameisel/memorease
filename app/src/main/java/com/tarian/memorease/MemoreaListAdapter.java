@@ -1,4 +1,4 @@
-package com.memorease.memorease;
+package com.tarian.memorease;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
