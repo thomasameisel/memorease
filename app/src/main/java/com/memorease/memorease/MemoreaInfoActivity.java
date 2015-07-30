@@ -13,10 +13,10 @@ import org.json.JSONArray;
 
 
 public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDialog.OnSaveMemoreaDialog {
-    static SharedPreferences sharedPreferences;
+    private static SharedPreferences sSharedPreferences;
 
-    private String memoreaId;
-    private String[] memoreaFields;
+    private String mMemoreaId;
+    private String[] mMemoreaFields;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -24,12 +24,12 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
         setContentView(R.layout.activity_memorea_info);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        sharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
-        memoreaId = getIntent().getStringExtra("memorea_id");
-        memoreaFields = getIntent().getStringArrayExtra("memorea_info");
+        sSharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
+        mMemoreaId = getIntent().getStringExtra("memorea_id");
+        mMemoreaFields = getIntent().getStringArrayExtra("memorea_info");
 
         MemoreaInfoFragment memoreaInfoFragment = (MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info);
-        memoreaInfoFragment.updateFields(memoreaFields);
+        memoreaInfoFragment.updateFields(mMemoreaFields);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
         final Bundle memoreaInfoBundle = new Bundle();
         memoreaInfoBundle.putString("dialog_title", getString(R.string.edit_memorea_title));
         memoreaInfoBundle.putBoolean("is_editing", true);
-        memoreaInfoBundle.putStringArray("edit_memorea_info", memoreaFields);
+        memoreaInfoBundle.putStringArray("edit_memorea_info", mMemoreaFields);
 
         final MemoreaDialog memoreaDialog = new MemoreaDialog();
         memoreaDialog.setArguments(memoreaInfoBundle);
@@ -68,15 +68,15 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
     @Override
     public void onSaveMemoreaDialog(final String[] fields) {
         for (int i = 0; i < 4; ++i) {
-            memoreaFields[i] = fields[i];
+            mMemoreaFields[i] = fields[i];
         }
         MemoreaInfoFragment memoreaInfoFragment = (MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info);
-        memoreaInfoFragment.updateFields(memoreaFields);
-        addMemoreaSharedPref(memoreaId, memoreaFields);
+        memoreaInfoFragment.updateFields(mMemoreaFields);
+        addMemoreaSharedPref(mMemoreaId, mMemoreaFields);
     }
 
     private static void addMemoreaSharedPref(final String id, final String[] fields) {
-        final SharedPreferences.Editor sharedPreferencesEditor = sharedPreferences.edit();
+        final SharedPreferences.Editor sharedPreferencesEditor = sSharedPreferences.edit();
         sharedPreferencesEditor.putString(id, getJSONStringFromArray(fields).toString());
         sharedPreferencesEditor.apply();
     }
@@ -86,7 +86,7 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
      * @param values String array to convert to JSON
      */
     private static JSONArray getJSONStringFromArray(final String[] values) {
-        JSONArray array = new JSONArray();
+        final JSONArray array = new JSONArray();
         for (String value : values) {
             array.put(value);
         }

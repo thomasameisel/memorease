@@ -18,7 +18,7 @@
         </activity>
         <activity
             android:name=".MemorizeScreenActivity"
-            android:label="@string/title_activity_memorize_screen" >
+            android:label="@string/title_activity_memorize_screen">
         </activity>
 
         <receiver android:name=".AlarmReceiver" />

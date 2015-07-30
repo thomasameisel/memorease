@@ -7,6 +7,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,34 +29,35 @@ public class MemoreaDialog extends DialogFragment {
     public interface OnSaveMemoreaDialog {
         /**
          * Called when the Save button is pressed in the Memorea Dialog
-         * @param fields String array of length 4 with the title, question, answer, and hint
+         * @param fields String array of length 4 with the mTitle, mQuestion, mAnswer, and mHint
          */
         void onSaveMemoreaDialog(String[] fields);
     }
 
-    private EditText title, question, answer, hint;
-    private EditText[] requiredFields;
-    private OnSaveMemoreaDialog memoreaListener;
+    private EditText mTitle, mQuestion, mAnswer, mHint;
+    private EditText[] mRequiredFields;
+    private OnSaveMemoreaDialog mMemoreaListener;
 
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
         try {
-            memoreaListener = (OnSaveMemoreaDialog)activity;
+            mMemoreaListener = (OnSaveMemoreaDialog)activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + "must implement OnSaveMemoreaDialog");
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View addView = inflater.inflate(R.layout.fragment_add_memorea, null);
         initEditText(addView);
         if (getArguments() != null && getArguments().getStringArray("edit_memorea_info") != null) {
-            setEditTextFields(addView, getArguments().getStringArray("edit_memorea_info"));
+            setEditTextFields(getArguments().getStringArray("edit_memorea_info"));
         }
 
         builder.setView(addView)
@@ -83,7 +85,7 @@ public class MemoreaDialog extends DialogFragment {
                         updatedFields[1] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
                         updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
                         updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
-                        memoreaListener.onSaveMemoreaDialog(updatedFields);
+                        mMemoreaListener.onSaveMemoreaDialog(updatedFields);
                         d.dismiss();
                     } else {
                         setFocusToMissingFields();
@@ -94,18 +96,18 @@ public class MemoreaDialog extends DialogFragment {
     }
 
     private void initEditText(final View dialogView) {
-        title = (EditText)dialogView.findViewById(R.id.edit_text_title);
-        question = (EditText)dialogView.findViewById(R.id.edit_text_question);
-        answer = (EditText)dialogView.findViewById(R.id.edit_text_answer);
-        hint = (EditText)dialogView.findViewById(R.id.edit_text_hint);
-        requiredFields = new EditText[3];
-        requiredFields[0] = title;
-        requiredFields[1] = question;
-        requiredFields[2] = answer;
+        mTitle = (EditText)dialogView.findViewById(R.id.edit_text_title);
+        mQuestion = (EditText)dialogView.findViewById(R.id.edit_text_question);
+        mAnswer = (EditText)dialogView.findViewById(R.id.edit_text_answer);
+        mHint = (EditText)dialogView.findViewById(R.id.edit_text_hint);
+        mRequiredFields = new EditText[3];
+        mRequiredFields[0] = mTitle;
+        mRequiredFields[1] = mQuestion;
+        mRequiredFields[2] = mAnswer;
     }
 
     private boolean requiredFieldsSet() {
-        for (EditText field : requiredFields) {
+        for (EditText field : mRequiredFields) {
             if (field.getText().toString().matches("")) {
                 return false;
             }
@@ -115,7 +117,7 @@ public class MemoreaDialog extends DialogFragment {
 
     private void setFocusToMissingFields() {
         boolean setFocus = false;
-        for (EditText field : requiredFields) {
+        for (EditText field : mRequiredFields) {
             if (field.getText().toString().matches("")) {
                 if (!setFocus) {
                     field.requestFocus();
@@ -129,10 +131,10 @@ public class MemoreaDialog extends DialogFragment {
         }
     }
 
-    private void setEditTextFields(final View view, final String[] memoreaInfo) {
-        title.setText(memoreaInfo[0]);
-        question.setText(memoreaInfo[1]);
-        answer.setText(memoreaInfo[2]);
-        hint.setText(memoreaInfo[3]);
+    private void setEditTextFields(final String[] memoreaInfo) {
+        mTitle.setText(memoreaInfo[0]);
+        mQuestion.setText(memoreaInfo[1]);
+        mAnswer.setText(memoreaInfo[2]);
+        mHint.setText(memoreaInfo[3]);
     }
 }

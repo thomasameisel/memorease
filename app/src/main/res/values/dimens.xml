@@ -5,4 +5,5 @@
     <dimen name="collapsible_toolbar_height">150dp</dimen>
     <dimen name="card_text_size">20sp</dimen>
     <dimen name="memorize_screen_text_size">30sp</dimen>
+    <dimen name="fab_compat_margin">0dp</dimen>
 </resources>

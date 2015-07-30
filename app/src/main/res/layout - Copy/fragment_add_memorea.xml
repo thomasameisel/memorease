@@ -19,7 +19,7 @@
                 android:id="@+id/edit_text_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/title"
+                android:mHint="@string/mTitle"
                 android:textSize="16sp"
                 android:maxLines="1"
                 android:inputType="textCapWords"/>
@@ -33,7 +33,7 @@
                 android:id="@+id/edit_text_question"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/question"
+                android:mHint="@string/mQuestion"
                 android:textSize="16sp"
                 android:maxLines="1"
                 android:inputType="textCapSentences"/>
@@ -47,7 +47,7 @@
                 android:id="@+id/edit_text_answer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/answer"
+                android:mHint="@string/mAnswer"
                 android:textSize="16sp"
                 android:inputType="textMultiLine|textCapSentences"/>
         </android.support.design.widget.TextInputLayout>
@@ -59,7 +59,7 @@
                 android:id="@+id/edit_text_hint"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_optional"
+                android:mHint="@string/hint_optional"
                 android:textSize="16sp"
                 android:inputType="textMultiLine|textCapSentences"/>
         </android.support.design.widget.TextInputLayout>

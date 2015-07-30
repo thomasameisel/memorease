@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
- * Fragment that shows the answer and prompts the user to select Got it or Wrong<br>
- * Must have an Extra String answer
+ * Fragment that shows the mAnswer and prompts the user to select Got it or Wrong<br>
+ * Must have an Extra String mAnswer
  */
 public class MemorizeScreenAnswerFragment extends Fragment {
 
@@ -24,6 +24,6 @@ public class MemorizeScreenAnswerFragment extends Fragment {
     }
 
     private void setAnswer(final View view) {
-        ((TextView)view.findViewById(R.id.text_view_answer)).setText(getActivity().getIntent().getStringExtra("answer"));
+        ((TextView)view.findViewById(R.id.text_view_answer)).setText(getActivity().getIntent().getStringExtra("mAnswer"));
     }
 }

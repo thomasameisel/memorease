@@ -16,15 +16,15 @@ import android.widget.TextView;
 
 /**
  * Activity for when a memorization is occurring<br>
- * Holds the memorize screen fragment and memorize screen answer fragment
- * Must include Extra of String id, String title, String question, String answer, String hint, and boolean continue
+ * Holds the memorize screen fragment and memorize screen mAnswer fragment
+ * Must include Extra of String mId, String mTitle, String mQuestion, String mAnswer, String mHint, and boolean continue
  */
 public class MemorizeScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorize_screen);
-        ((TextView)findViewById(R.id.text_view_toolbar_title)).setText(getIntent().getExtras().getString("title"));
+        ((TextView)findViewById(R.id.text_view_toolbar_title)).setText(getIntent().getExtras().getString("mTitle"));
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
@@ -33,7 +33,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
 
 
     /**
-     * Displays the hint in the memorize screen fragment
+     * Displays the mHint in the memorize screen fragment
      */
     public void giveHint(final View view) {
         final MemorizeScreenFragment memorizeScreenFragment = (MemorizeScreenFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorize_screen);
@@ -41,7 +41,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
     }
 
     /**
-     * Changes the current fragment from the memorize screen fragment to the memorize screen answer fragment
+     * Changes the current fragment from the memorize screen fragment to the memorize screen mAnswer fragment
      */
     public void showAnswer(final View view) {
         final MemorizeScreenAnswerFragment memorizeScreenAnswerFragment = new MemorizeScreenAnswerFragment();
@@ -68,7 +68,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
 
     private Intent generateIntent(final boolean value) {
         final Intent intent = new Intent(this, MemoreaListActivity.class);
-        intent.putExtra("id", getIntent().getExtras().getString("id"));
+        intent.putExtra("mId", getIntent().getExtras().getString("mId"));
         intent.putExtra("continue", value);
         return intent;
     }

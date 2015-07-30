@@ -10,21 +10,21 @@ import android.content.Intent;
 /**
  * Receiver for when the memorea memorization is ready<br>
  * Requires an Extra boolean multiple_notifications<br>
- * If multiple_notifications is false, also requires String title, String question, String answer, String hint, and String id
+ * If multiple_notifications is false, also requires String mTitle, String mQuestion, String mAnswer, String mHint, and String mId
  */
 public class AlarmReceiver extends BroadcastReceiver {
     /**
      * Creates a notification for either a single or multiple memoreas
      * @param context MemoreaListActivity activity
      * @param intent requires a boolean extra with the name multiple_notifications<br>
-     *               if multiple_notifications is false, also requires String title, String question, String answer, String hint, and String id
+     *               if multiple_notifications is false, also requires String mTitle, String mQuestion, String mAnswer, String mHint, and String mId
      */
     @Override
     public void onReceive(final Context context, final Intent intent) {
         final Intent memoreaIntent = new Intent("NOTIFICATION_READY");
         context.sendBroadcast(memoreaIntent);
 
-        final String title = intent.getStringExtra("title");
+        final String title = intent.getStringExtra("mTitle");
 
         final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         final Notification.Builder builder = new Notification.Builder(context);

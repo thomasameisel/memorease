@@ -3,13 +3,14 @@ package com.memorease.memorease;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 
 /**
- * Popup dialog fragment for a basic dialog fragment with a title, message, and OK button
+ * Popup dialog fragment for a basic dialog fragment with a mTitle, message, and OK button
  */
 public class BasicDialog extends DialogFragment {
     /**
@@ -20,15 +21,16 @@ public class BasicDialog extends DialogFragment {
     public static BasicDialog newInstance(final String title, final String message) {
         final BasicDialog frag = new BasicDialog();
         final Bundle args = new Bundle();
-        args.putString("title", title);
+        args.putString("mTitle", title);
         args.putString("message", message);
         frag.setArguments(args);
         return frag;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final String title = getArguments().getString("title");
+        final String title = getArguments().getString("mTitle");
         final String message = getArguments().getString("message");
 
         return new AlertDialog.Builder(getActivity())

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -19,15 +18,15 @@ import java.util.UUID;
  * Adapter for the RecyclerView
  */
 public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.MemoreaViewHolder> {
-    private final List<MemoreaInfo> memoreaList;
-    private AdapterView.OnItemClickListener onItemClickListener;
+    private List<MemoreaInfo> mMemoreaList;
+    private AdapterView.OnItemClickListener mOnItemClickListener;
 
     public MemoreaListAdapter() {
-        this.memoreaList = new ArrayList<>();
+        this.mMemoreaList = new ArrayList<>();
     }
 
-    public void setOnItemClickListener(final AdapterView.OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
+    public void setMOnItemClickListener(final AdapterView.OnItemClickListener mOnItemClickListener) {
+        this.mOnItemClickListener = mOnItemClickListener;
     }
 
     @Override
@@ -38,8 +37,8 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
 
     @Override
     public void onBindViewHolder(final MemoreaViewHolder holder, final int position) {
-        MemoreaInfo memoreaInfo = memoreaList.get(position);
-        holder.setTitle(memoreaInfo.title);
+        final MemoreaInfo memoreaInfo = mMemoreaList.get(position);
+        holder.setTitle(memoreaInfo.mTitle);
         setNextMemorizationTime("Memorization ready!", memoreaInfo, holder);
     }
 
@@ -48,14 +47,14 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
      */
     @Override
     public int getItemCount() {
-        return memoreaList.size();
+        return mMemoreaList.size();
     }
 
     /**
      * Swaps memoreas and notifies
      */
     public void onItemMove(final int from, final int to) {
-        Collections.swap(memoreaList, from, to);
+        Collections.swap(mMemoreaList, from, to);
         notifyItemMoved(from, to);
     }
 
@@ -63,7 +62,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
      * Deletes a memorea
      */
     public void onItemDismiss(final int position) {
-        memoreaList.remove(position);
+        mMemoreaList.remove(position);
         notifyItemRemoved(position);
     }
 
@@ -88,28 +87,28 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
      * Adds a memorea to the memorea list in the position specified
      */
     public void onItemAdd(final MemoreaInfo memoreaInfo, final int position) {
-        memoreaList.add(position, memoreaInfo);
+        mMemoreaList.add(position, memoreaInfo);
         notifyItemInserted(position);
     }
 
     private void onItemHolderClick(final MemoreaViewHolder memoreaViewHolder) {
-        if (onItemClickListener != null) {
-            onItemClickListener.onItemClick(null, memoreaViewHolder.itemView,
+        if (mOnItemClickListener != null) {
+            mOnItemClickListener.onItemClick(null, memoreaViewHolder.itemView,
                     memoreaViewHolder.getAdapterPosition(), memoreaViewHolder.getItemId());
         }
     }
 
     /**
-     * Returns the memorea with the id field matching the parameter<br>
+     * Returns the memorea with the mId field matching the parameter<br>
      * If none exist, returns null
      */
     public MemoreaInfo getMemoreaByUUID(final UUID uuid) {
-        return getMemoreaByUUID(memoreaList, uuid);
+        return getMemoreaByUUID(mMemoreaList, uuid);
     }
 
     private MemoreaInfo getMemoreaByUUID(final List<MemoreaInfo> list, final UUID uuid) {
         for (MemoreaInfo memoreaInfo : list) {
-            if (uuid.equals(memoreaInfo.id)) {
+            if (uuid.equals(memoreaInfo.mId)) {
                 return memoreaInfo;
             }
         }
@@ -117,25 +116,15 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         return null;
     }
 
-    private int getMemoreaPositionByUUID(final UUID uuid) {
-        for (int i = 0; i < memoreaList.size(); ++i) {
-            if (uuid.equals(memoreaList.get(i).id)) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     /**
      * Returns the memorea at the specified position
      */
     public MemoreaInfo getItem(final int position) {
-        return memoreaList.get(position);
+        return mMemoreaList.get(position);
     }
 
     private void setNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
-        if (!memoreaInfo.completed) {
+        if (!memoreaInfo.mCompleted) {
             final long timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
             if (timeUntilNextAlarm < 0) {
                 holder.setSpecialMessage(memorizationReady);
@@ -161,16 +150,20 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
      * Calls notifyItemChanged(position) for every position in the memorea list
      */
     public void notifyAllItemsChanged() {
-        for (int i = 0; i < memoreaList.size(); ++i) {
+        for (int i = 0; i < mMemoreaList.size(); ++i) {
             notifyItemChanged(i);
         }
     }
 
     public void setIdOrder(final String[] memoreaOrder) {
-        List<MemoreaInfo> copyOfMemoreaList = new ArrayList<>(memoreaList);
-        for (int i = 0; i < memoreaOrder.length; ++i) {
-            memoreaList.set(i, getMemoreaByUUID(copyOfMemoreaList, UUID.fromString(memoreaOrder[i])));
+        final List<MemoreaInfo> sortedMemoreaList = new ArrayList<>();
+        for (String aMemoreaOrder : memoreaOrder) {
+            final MemoreaInfo memoreaInfo = getMemoreaByUUID(UUID.fromString(aMemoreaOrder));
+            if (memoreaInfo != null) {
+                sortedMemoreaList.add(memoreaInfo);
+            }
         }
+        mMemoreaList = sortedMemoreaList;
     }
 
     /**
@@ -206,7 +199,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
 
         /**
-         * Sets the title in the view of the memorea
+         * Sets the mTitle in the view of the memorea
          */
         public void setTitle(String title) {
             this.title.setText(title);

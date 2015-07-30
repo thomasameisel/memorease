@@ -30,7 +30,7 @@ public class MemoreaInfoFragment extends Fragment {
      * @param updatedFields String array of length 4
      */
     public void updateFields(final String[] updatedFields) {
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)getActivity().findViewById(R.id.collapsing_toolbar);
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout)getActivity().findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(updatedFields[0]);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBarPlus1);
         collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
