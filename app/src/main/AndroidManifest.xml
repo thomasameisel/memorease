@@ -21,7 +21,12 @@
             android:label="@string/title_activity_memorize_screen" >
         </activity>
 
-        <receiver android:name=".AlarmReceiver"/>
+        <receiver android:name=".AlarmReceiver" />
+
+        <activity
+            android:name=".MemoreaInfoActivity"
+            android:label="@string/title_activity_memorea_info" >
+        </activity>
     </application>
 
 </manifest>

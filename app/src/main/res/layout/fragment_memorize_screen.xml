@@ -23,6 +23,8 @@
         android:gravity="center"
         android:textSize="@dimen/memorize_screen_text_size"
         android:textColor="@color/secondary_text_default_material_light"
+        android:maxLines="3"
+        android:ellipsize="end"
         android:alpha="0"/>
     <com.memorease.memorease.views.Circle
         android:id="@+id/circle"

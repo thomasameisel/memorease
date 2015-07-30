@@ -104,13 +104,27 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
      * If none exist, returns null
      */
     public MemoreaInfo getMemoreaByUUID(final UUID uuid) {
-        for (MemoreaInfo memoreaInfo : memoreaList) {
+        return getMemoreaByUUID(memoreaList, uuid);
+    }
+
+    private MemoreaInfo getMemoreaByUUID(final List<MemoreaInfo> list, final UUID uuid) {
+        for (MemoreaInfo memoreaInfo : list) {
             if (uuid.equals(memoreaInfo.id)) {
                 return memoreaInfo;
             }
         }
 
         return null;
+    }
+
+    private int getMemoreaPositionByUUID(final UUID uuid) {
+        for (int i = 0; i < memoreaList.size(); ++i) {
+            if (uuid.equals(memoreaList.get(i).id)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     /**
@@ -149,6 +163,13 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     public void notifyAllItemsChanged() {
         for (int i = 0; i < memoreaList.size(); ++i) {
             notifyItemChanged(i);
+        }
+    }
+
+    public void setIdOrder(final String[] memoreaOrder) {
+        List<MemoreaInfo> copyOfMemoreaList = new ArrayList<>(memoreaList);
+        for (int i = 0; i < memoreaOrder.length; ++i) {
+            memoreaList.set(i, getMemoreaByUUID(copyOfMemoreaList, UUID.fromString(memoreaOrder[i])));
         }
     }
 

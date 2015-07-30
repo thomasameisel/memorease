@@ -19,11 +19,11 @@ public class MemorizeScreenAnswerFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_memorize_screen_answer, container, false);
-        setAnswer(view, getArguments().getString("answer"));
+        setAnswer(view);
         return view;
     }
 
-    private void setAnswer(final View view, final String answer) {
-        ((TextView)view.findViewById(R.id.text_view_answer)).setText(answer);
+    private void setAnswer(final View view) {
+        ((TextView)view.findViewById(R.id.text_view_answer)).setText(getActivity().getIntent().getStringExtra("answer"));
     }
 }

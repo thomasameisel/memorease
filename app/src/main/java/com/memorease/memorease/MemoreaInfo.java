@@ -51,7 +51,7 @@ public class MemoreaInfo {
     /**
      * Generates a new id for the memorea
      */
-    public void createNewUUID() {
+    public void generateNewId() {
         id = UUID.randomUUID();
     }
 

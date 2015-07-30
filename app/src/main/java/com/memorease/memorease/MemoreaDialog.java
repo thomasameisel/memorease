@@ -5,13 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -19,7 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.widget.TextView;
 
 /**
  * Popup dialog fragment for either adding or editing a memorea<br>
@@ -30,30 +25,25 @@ public class MemoreaDialog extends DialogFragment {
     /**
      * Listener for the result of either adding or editing a memorea
      */
-    public interface OnAddMemoreaListener {
+    public interface OnSaveMemoreaDialog {
         /**
-         * Creates card using this info, adds it to memoreaList, and creates a notification
-         * @param memoreaInfo Memorea created
+         * Called when the Save button is pressed in the Memorea Dialog
+         * @param fields String array of length 4 with the title, question, answer, and hint
          */
-        void onAddMemoreaCard(MemoreaInfo memoreaInfo);
-        /**
-         * Edits a memorea card and updates the notification
-         * @param updatedFields String array of length 5 with the id, title, question, answer, and hint
-         */
-        void onEditMemoreaCard(String[] updatedFields);
+        void onSaveMemoreaDialog(String[] fields);
     }
 
     private EditText title, question, answer, hint;
     private EditText[] requiredFields;
-    private OnAddMemoreaListener memoreaListener;
+    private OnSaveMemoreaDialog memoreaListener;
 
     @Override
     public void onAttach(final Activity activity) {
         super.onAttach(activity);
         try {
-            memoreaListener = (OnAddMemoreaListener)activity;
+            memoreaListener = (OnSaveMemoreaDialog)activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement OnAddMemoreaListener");
+            throw new ClassCastException(activity.toString() + "must implement OnSaveMemoreaDialog");
         }
     }
 
@@ -88,13 +78,13 @@ public class MemoreaDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if (requiredFieldsSet()) {
-                        if (getArguments().getBoolean("is_editing")) {
-                            editMemoreaCard();
-                            d.dismiss();
-                        } else {
-                            addMemoreaCard();
-                            d.dismiss();
-                        }
+                        final String[] updatedFields = new String[4];
+                        updatedFields[0] = ((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString();
+                        updatedFields[1] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
+                        updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
+                        updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
+                        memoreaListener.onSaveMemoreaDialog(updatedFields);
+                        d.dismiss();
                     } else {
                         setFocusToMissingFields();
                     }
@@ -140,28 +130,9 @@ public class MemoreaDialog extends DialogFragment {
     }
 
     private void setEditTextFields(final View view, final String[] memoreaInfo) {
-        title.setText(memoreaInfo[1]);
-        question.setText(memoreaInfo[2]);
-        answer.setText(memoreaInfo[3]);
-        hint.setText(memoreaInfo[4]);
-    }
-
-    private void addMemoreaCard() {
-        MemoreaInfo newMemorea = new MemoreaInfo(((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString(),
-                ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString(),
-                ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString(),
-                ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString(), 0);
-        newMemorea.createNewUUID();
-        memoreaListener.onAddMemoreaCard(newMemorea);
-    }
-
-    private void editMemoreaCard() {
-        final String[] updatedFields = new String[5];
-        updatedFields[0] = getArguments().getStringArray("edit_memorea_info")[0];
-        updatedFields[1] = ((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString();
-        updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
-        updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
-        updatedFields[4] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
-        memoreaListener.onEditMemoreaCard(updatedFields);
+        title.setText(memoreaInfo[0]);
+        question.setText(memoreaInfo[1]);
+        answer.setText(memoreaInfo[2]);
+        hint.setText(memoreaInfo[3]);
     }
 }

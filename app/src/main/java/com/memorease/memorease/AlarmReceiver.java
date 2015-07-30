@@ -21,6 +21,9 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(final Context context, final Intent intent) {
+        final Intent memoreaIntent = new Intent("NOTIFICATION_READY");
+        context.sendBroadcast(memoreaIntent);
+
         final String title = intent.getStringExtra("title");
 
         final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);

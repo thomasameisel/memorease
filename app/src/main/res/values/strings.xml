@@ -26,4 +26,7 @@
     <string name="memorization_ready">Memorization ready!</string>
     <string name="required_fields_not_set">Required fields not set!</string>
     <string name="required_fields_not_set_message">Please set the title, question, and answer fields</string>
+    <string name="title_activity_memorea_info">MemoreaInfoActivity</string>
+    <string name="no_memoreas_set">No memoreas set!</string>
+    <string name="add_a_memorea">Add a memorea</string>
 </resources>

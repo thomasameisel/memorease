@@ -1,23 +1,33 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_material_light">
 
-    <include layout="@layout/toolbar"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
-        android:background="@color/background_material_light"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/button_fab_add_memorea"
+        android:background="@color/background_material_light"/>
+    <TextView
+        android:id="@+id/text_view_no_memoreas_set"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/button_no_memoreas_set"
+        android:text="@string/no_memoreas_set"
+        android:textSize="@dimen/memorize_screen_text_size"
+        android:textColor="@color/primary_text_default_material_light"
+        android:visibility="gone"/>
+    <Button
+        android:id="@+id/button_no_memoreas_set"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:onClick="addMemorea"
-        app:layout_anchorGravity="center|left|start"/>
-</android.support.design.widget.CoordinatorLayout>
+        android:text="@string/add_a_memorea"
+        android:textColor="@color/button_text"
+        android:textAllCaps="true"
+        android:visibility="gone"/>
+</RelativeLayout>
