@@ -91,19 +91,43 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         notifyItemInserted(position);
     }
 
-    private void onItemHolderClick(final MemoreaViewHolder memoreaViewHolder) {
-        if (mOnItemClickListener != null) {
-            mOnItemClickListener.onItemClick(null, memoreaViewHolder.itemView,
-                    memoreaViewHolder.getAdapterPosition(), memoreaViewHolder.getItemId());
-        }
-    }
-
     /**
      * Returns the memorea with the mId field matching the parameter<br>
      * If none exist, returns null
      */
     public MemoreaInfo getMemoreaByUUID(final UUID uuid) {
         return getMemoreaByUUID(mMemoreaList, uuid);
+    }
+
+    /**
+     * Returns the memorea at the specified position
+     */
+    public MemoreaInfo getItem(final int position) {
+        return mMemoreaList.get(position);
+    }
+
+    /**
+     * Calls notifyItemChanged(position) for every position in the memorea list
+     */
+    public void notifyAllItemsChanged() {
+        for (int i = 0; i < mMemoreaList.size(); ++i) {
+            notifyItemChanged(i);
+        }
+    }
+
+    /**
+     * Sets the order of the memorea list to be the same order as the IDs in the String parameter
+     * @param memoreaOrder correct order of the IDs of the memoreas
+     */
+    public void setIdOrder(final String[] memoreaOrder) {
+        final List<MemoreaInfo> sortedMemoreaList = new ArrayList<>();
+        for (String aMemoreaOrder : memoreaOrder) {
+            final MemoreaInfo memoreaInfo = getMemoreaByUUID(UUID.fromString(aMemoreaOrder));
+            if (memoreaInfo != null) {
+                sortedMemoreaList.add(memoreaInfo);
+            }
+        }
+        mMemoreaList = sortedMemoreaList;
     }
 
     private MemoreaInfo getMemoreaByUUID(final List<MemoreaInfo> list, final UUID uuid) {
@@ -116,11 +140,11 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         return null;
     }
 
-    /**
-     * Returns the memorea at the specified position
-     */
-    public MemoreaInfo getItem(final int position) {
-        return mMemoreaList.get(position);
+    private void onItemHolderClick(final MemoreaViewHolder memoreaViewHolder) {
+        if (mOnItemClickListener != null) {
+            mOnItemClickListener.onItemClick(null, memoreaViewHolder.itemView,
+                    memoreaViewHolder.getAdapterPosition(), memoreaViewHolder.getItemId());
+        }
     }
 
     private void setNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
@@ -144,26 +168,6 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         } else {
             holder.setSpecialMessage("Completed!");
         }
-    }
-
-    /**
-     * Calls notifyItemChanged(position) for every position in the memorea list
-     */
-    public void notifyAllItemsChanged() {
-        for (int i = 0; i < mMemoreaList.size(); ++i) {
-            notifyItemChanged(i);
-        }
-    }
-
-    public void setIdOrder(final String[] memoreaOrder) {
-        final List<MemoreaInfo> sortedMemoreaList = new ArrayList<>();
-        for (String aMemoreaOrder : memoreaOrder) {
-            final MemoreaInfo memoreaInfo = getMemoreaByUUID(UUID.fromString(aMemoreaOrder));
-            if (memoreaInfo != null) {
-                sortedMemoreaList.add(memoreaInfo);
-            }
-        }
-        mMemoreaList = sortedMemoreaList;
     }
 
     /**

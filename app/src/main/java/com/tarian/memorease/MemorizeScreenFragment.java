@@ -58,6 +58,31 @@ public class MemorizeScreenFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(final Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
+        if (getView() != null) {
+            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(MEMOREA_HINT, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
+        }
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /**
+     * Shows the user the mHint
+     */
+    public void giveHint() {
+        if (getView() != null) {
+            final AnimatorSet animationSet = new AnimatorSet();
+            animationSet.playTogether(createTranslationYAnimator(getView().findViewById(R.id.text_view_question), 0, 0 - getView().findViewById(R.id.text_view_hint).getHeight()),
+                    createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1),
+                    createFadeAnimator(getView().findViewById(R.id.button_hint), 1, 0),
+                    createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0, 0 - mSpaceBetweenButtons));
+            animationSet.start();
+        }
+    }
+
     private void removeHintButton(final View view) {
         view.findViewById(R.id.button_hint).setVisibility(View.GONE);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)view.findViewById(R.id.button_answer).getLayoutParams();
@@ -93,31 +118,6 @@ public class MemorizeScreenFragment extends Fragment {
             public void onAnimationRepeat(final Animation animation) {
             }
         };
-    }
-
-    @Override
-    public void onSaveInstanceState(final Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
-        if (getView() != null) {
-            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
-            savedInstanceState.putString(MEMOREA_HINT, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
-        }
-
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Shows the user the mHint
-     */
-    public void giveHint() {
-        if (getView() != null) {
-            final AnimatorSet animationSet = new AnimatorSet();
-            animationSet.playTogether(createTranslationYAnimator(getView().findViewById(R.id.text_view_question), 0, 0 - getView().findViewById(R.id.text_view_hint).getHeight()),
-                    createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1),
-                    createFadeAnimator(getView().findViewById(R.id.button_hint), 1, 0),
-                    createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0, 0 - mSpaceBetweenButtons));
-            animationSet.start();
-        }
     }
 
     private float dpToPx(final int dp) {

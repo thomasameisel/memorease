@@ -74,68 +74,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         }
     }
 
-    private void updateMemoreaAfterMemorization(final MemoreaInfo memoreaInfo) {
-        if (memoreaInfo != null) {
-            final boolean useNextTime = getIntent().getExtras().getBoolean("continue");
-            if (checkIfFinishedLastTime(useNextTime, memoreaInfo)) {
-                DialogFragment dialogFragment = BasicDialog.newInstance(getString(R.string.completed), String.format(getString(R.string.completed_message), memoreaInfo.mTitle));
-                dialogFragment.show(getSupportFragmentManager(), "dialog");
-                ++memoreaInfo.mMemorizationLevel;
-                memoreaInfo.mCompleted = true;
-            } else {
-                if (useNextTime) {
-                    ++memoreaInfo.mMemorizationLevel;
-                    addMemoreaSharedPref(memoreaInfo);
-                    mMemoreaListAdapter.notifyDataSetChanged();
-                }
-                createNotification(true, memoreaInfo);
-            }
-        }
-        mNumActiveNotifications = 0;
-    }
-
-    private void initializeNoMemoreasView() {
-        if (mMemoreaListAdapter.getItemCount() == 0) {
-            findViewById(R.id.text_view_no_memoreas_set).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_no_memoreas_set).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(R.id.text_view_no_memoreas_set).setVisibility(View.GONE);
-            findViewById(R.id.button_no_memoreas_set).setVisibility(View.GONE);
-        }
-    }
-
-    public void registerReceivers() {
-        mBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(final Context ctx, final Intent intent) {
-                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
-                    mMemoreaListAdapter.notifyAllItemsChanged();
-                }
-            }
-        };
-        mNotificationReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(final Context ctx, final Intent intent) {
-                if (intent.getAction().compareTo("NOTIFICATION_READY") == 0) {
-                    mMemoreaListAdapter.notifyAllItemsChanged();
-                }
-            }
-        };
-
-        registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
-        registerReceiver(mNotificationReceiver, new IntentFilter("NOTIFICATION_READY"));
-        clearNotifications();
-    }
-
-    public void unregisterReceivers() {
-        if (mBroadcastReceiver != null) {
-            unregisterReceiver(mBroadcastReceiver);
-        }
-        if (mNotificationReceiver != null) {
-            unregisterReceiver(mNotificationReceiver);
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -168,6 +106,142 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         savedInstanceState.putBoolean(LOAD_NEXT_NOTIFICATION, false);
 
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+    /**
+     * Either opens the info fragment or starts the memorization screen activity based on if it is time for the memorea memorization
+     */
+    @Override
+    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+        final MemoreaInfo memoreaInfoClicked = mMemoreaListAdapter.getItem(position);
+
+        if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.mCompleted) {
+            final Intent memorizeScreenIntent = new Intent(this, MemorizeScreenActivity.class);
+            memorizeScreenIntent.putExtra("mTitle", memoreaInfoClicked.mTitle);
+            memorizeScreenIntent.putExtra("mQuestion", memoreaInfoClicked.mQuestion);
+            memorizeScreenIntent.putExtra("mAnswer", memoreaInfoClicked.mAnswer);
+            memorizeScreenIntent.putExtra("mHint", memoreaInfoClicked.mHint);
+            memorizeScreenIntent.putExtra("mId", memoreaInfoClicked.mId.toString());
+            startActivity(memorizeScreenIntent);
+        } else {
+            if (mDualPane) {
+                mMemoreaClicked = memoreaInfoClicked;
+                ((MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info)).updateFields(memoreaInfoClicked.getFields());
+            } else {
+                final String[] info = new String[6];
+                info[0] = memoreaInfoClicked.mTitle;
+                info[1] = memoreaInfoClicked.mQuestion;
+                info[2] = memoreaInfoClicked.mAnswer;
+                info[3] = memoreaInfoClicked.mHint;
+                info[4] = Integer.toString(memoreaInfoClicked.mMemorizationLevel);
+                info[5] = Integer.toString(memoreaInfoClicked.mNotificationGeneratorId);
+
+                openMemoreaInfoFragment(memoreaInfoClicked.mId.toString(), info);
+            }
+        }
+    }
+
+    @Override
+    public void onSaveMemoreaDialog(final String[] updatedFields) {
+        final MemoreaInfo memoreaInfo = new MemoreaInfo(updatedFields[0], updatedFields[1], updatedFields[2], updatedFields[3], 0);
+        memoreaInfo.generateNewId();
+        createNotification(true, memoreaInfo);
+        mMemoreaListAdapter.onItemAdd(memoreaInfo);
+        mRecyclerView.smoothScrollToPosition(mMemoreaListAdapter.getItemCount() - 1);
+        addMemoreaSharedPref(memoreaInfo);
+        initializeNoMemoreasView();
+    }
+
+    /**
+     * Opens the dialog fragment to add a memorea
+     */
+    public void addMemorea(final View view) {
+        // dialog to add memorea
+        final Bundle memoreaInfo = new Bundle();
+        memoreaInfo.putString("dialog_title", getString(R.string.add_memorea_title));
+        memoreaInfo.putBoolean("is_editing", false);
+
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        final MemoreaDialog memoreaDialog = new MemoreaDialog();
+        memoreaDialog.setArguments(memoreaInfo);
+        memoreaDialog.show(fragmentManager, null);
+    }
+
+    /**
+     * Opens the dialog fragment to edit a memorea
+     */
+    public void editMemorea(final View view) {
+        // dialog to edit memorea
+        final Bundle memoreaInfoBundle = new Bundle();
+        memoreaInfoBundle.putString("dialog_title", getString(R.string.edit_memorea_title));
+        memoreaInfoBundle.putBoolean("is_editing", true);
+        memoreaInfoBundle.putStringArray("edit_memorea_info", mMemoreaClicked.getFields());
+
+        final MemoreaDialog memoreaDialog = new MemoreaDialog();
+        memoreaDialog.setArguments(memoreaInfoBundle);
+        memoreaDialog.show(getSupportFragmentManager(), null);
+    }
+
+    private void updateMemoreaAfterMemorization(final MemoreaInfo memoreaInfo) {
+        if (memoreaInfo != null) {
+            final boolean useNextTime = getIntent().getExtras().getBoolean("continue");
+            if (checkIfFinishedLastTime(useNextTime, memoreaInfo)) {
+                DialogFragment dialogFragment = BasicDialog.newInstance(getString(R.string.completed), String.format(getString(R.string.completed_message), memoreaInfo.mTitle));
+                dialogFragment.show(getSupportFragmentManager(), "dialog");
+                ++memoreaInfo.mMemorizationLevel;
+                memoreaInfo.mCompleted = true;
+            } else {
+                if (useNextTime) {
+                    ++memoreaInfo.mMemorizationLevel;
+                    addMemoreaSharedPref(memoreaInfo);
+                    mMemoreaListAdapter.notifyDataSetChanged();
+                }
+                createNotification(true, memoreaInfo);
+            }
+        }
+        mNumActiveNotifications = 0;
+    }
+
+    private void initializeNoMemoreasView() {
+        if (mMemoreaListAdapter.getItemCount() == 0) {
+            findViewById(R.id.text_view_no_memoreas_set).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_no_memoreas_set).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.text_view_no_memoreas_set).setVisibility(View.GONE);
+            findViewById(R.id.button_no_memoreas_set).setVisibility(View.GONE);
+        }
+    }
+
+    private void registerReceivers() {
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context ctx, final Intent intent) {
+                if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
+                    mMemoreaListAdapter.notifyAllItemsChanged();
+                }
+            }
+        };
+        mNotificationReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(final Context ctx, final Intent intent) {
+                if (intent.getAction().compareTo("NOTIFICATION_READY") == 0) {
+                    mMemoreaListAdapter.notifyAllItemsChanged();
+                }
+            }
+        };
+
+        registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
+        registerReceiver(mNotificationReceiver, new IntentFilter("NOTIFICATION_READY"));
+        clearNotifications();
+    }
+
+    private void unregisterReceivers() {
+        if (mBroadcastReceiver != null) {
+            unregisterReceiver(mBroadcastReceiver);
+        }
+        if (mNotificationReceiver != null) {
+            unregisterReceiver(mNotificationReceiver);
+        }
     }
 
     private RecyclerView initRecyclerView() {
@@ -259,39 +333,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     /**
-     * Either opens the info fragment or starts the memorization screen activity based on if it is time for the memorea memorization
-     */
-    @Override
-    public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-        final MemoreaInfo memoreaInfoClicked = mMemoreaListAdapter.getItem(position);
-
-        if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.mCompleted) {
-            final Intent memorizeScreenIntent = new Intent(this, MemorizeScreenActivity.class);
-            memorizeScreenIntent.putExtra("mTitle", memoreaInfoClicked.mTitle);
-            memorizeScreenIntent.putExtra("mQuestion", memoreaInfoClicked.mQuestion);
-            memorizeScreenIntent.putExtra("mAnswer", memoreaInfoClicked.mAnswer);
-            memorizeScreenIntent.putExtra("mHint", memoreaInfoClicked.mHint);
-            memorizeScreenIntent.putExtra("mId", memoreaInfoClicked.mId.toString());
-            startActivity(memorizeScreenIntent);
-        } else {
-            if (mDualPane) {
-                mMemoreaClicked = memoreaInfoClicked;
-                ((MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info)).updateFields(memoreaInfoClicked.getFields());
-            } else {
-                final String[] info = new String[6];
-                info[0] = memoreaInfoClicked.mTitle;
-                info[1] = memoreaInfoClicked.mQuestion;
-                info[2] = memoreaInfoClicked.mAnswer;
-                info[3] = memoreaInfoClicked.mHint;
-                info[4] = Integer.toString(memoreaInfoClicked.mMemorizationLevel);
-                info[5] = Integer.toString(memoreaInfoClicked.mNotificationGeneratorId);
-
-                openMemoreaInfoFragment(memoreaInfoClicked.mId.toString(), info);
-            }
-        }
-    }
-
-    /**
      * Creates an ArrayList of memoreas from the shared preferences
      */
     private ArrayList<MemoreaInfo> initializeListFromSharedPref(final Map<String, ?> allKeys) {
@@ -324,36 +365,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         } finally {
             return memoreaInfo;
         }
-    }
-
-    /**
-     * Opens the dialog fragment to add a memorea
-     */
-    public void addMemorea(final View view) {
-        // dialog to add memorea
-        final Bundle memoreaInfo = new Bundle();
-        memoreaInfo.putString("dialog_title", getString(R.string.add_memorea_title));
-        memoreaInfo.putBoolean("is_editing", false);
-
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        final MemoreaDialog memoreaDialog = new MemoreaDialog();
-        memoreaDialog.setArguments(memoreaInfo);
-        memoreaDialog.show(fragmentManager, null);
-    }
-
-    /**
-     * Opens the dialog fragment to edit a memorea
-     */
-    public void editMemorea(final View view) {
-        // dialog to edit memorea
-        final Bundle memoreaInfoBundle = new Bundle();
-        memoreaInfoBundle.putString("dialog_title", getString(R.string.edit_memorea_title));
-        memoreaInfoBundle.putBoolean("is_editing", true);
-        memoreaInfoBundle.putStringArray("edit_memorea_info", mMemoreaClicked.getFields());
-
-        final MemoreaDialog memoreaDialog = new MemoreaDialog();
-        memoreaDialog.setArguments(memoreaInfoBundle);
-        memoreaDialog.show(getSupportFragmentManager(), null);
     }
 
     private boolean checkIfFinishedLastTime(final boolean useNextTime, final MemoreaInfo memoreaInfo) {
@@ -394,22 +405,11 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, timeUntilMemorization, pendingIntent);
     }
 
-    @Override
-    public void onSaveMemoreaDialog(final String[] updatedFields) {
-        final MemoreaInfo memoreaInfo = new MemoreaInfo(updatedFields[0], updatedFields[1], updatedFields[2], updatedFields[3], 0);
-        memoreaInfo.generateNewId();
-        createNotification(true, memoreaInfo);
-        mMemoreaListAdapter.onItemAdd(memoreaInfo);
-        mRecyclerView.smoothScrollToPosition(mMemoreaListAdapter.getItemCount() - 1);
-        addMemoreaSharedPref(memoreaInfo);
-        initializeNoMemoreasView();
-    }
-
     /**
      * Removes the memorea from shared preferences
      * @param deletedMemorea Memorea that needs to have its information deleted from shared preferences
      */
-    public static void removeMemoreaSharedPref(final MemoreaInfo deletedMemorea) {
+    private static void removeMemoreaSharedPref(final MemoreaInfo deletedMemorea) {
         final SharedPreferences.Editor sharedPreferencesEditor = sSharedPreferences.edit();
         sharedPreferencesEditor.remove(deletedMemorea.mId.toString());
         sharedPreferencesEditor.remove(String.format("%s_notification_time", deletedMemorea.mId.toString()));
@@ -420,7 +420,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
      * Adds the memorea to shared preferences
      * @param addedMemorea Memorea that needs to have its information added to shared preferences
      */
-    public static void addMemoreaSharedPref(final MemoreaInfo addedMemorea) {
+    private static void addMemoreaSharedPref(final MemoreaInfo addedMemorea) {
         final SharedPreferences.Editor sharedPreferencesEditor = sSharedPreferences.edit();
         sharedPreferencesEditor.putString(addedMemorea.mId.toString(), getJSONStringFromArray(addedMemorea.getFields()).toString());
         sharedPreferencesEditor.apply();
@@ -432,7 +432,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
      * @param info Information of memorea that will be displayed in the fragment<br>
      *             String array of length 4 with the mTitle, mQuestion, mAnswer, and mHint
      */
-    public void openMemoreaInfoFragment(final String id, final String[] info) {
+    private void openMemoreaInfoFragment(final String id, final String[] info) {
         //if dual pane send this info to fragment, else
         final Intent memoreaInfoIntent = new Intent(this, MemoreaInfoActivity.class);
         memoreaInfoIntent.putExtra("memorea_id", id);
@@ -445,7 +445,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
      * Generates a JSON array from a String array
      * @param values String array to convert to JSON
      */
-    public static JSONArray getJSONStringFromArray(final String[] values) {
+    private static JSONArray getJSONStringFromArray(final String[] values) {
         final JSONArray array = new JSONArray();
         for (String value : values) {
             array.put(value);
@@ -457,7 +457,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
      * Generates a String array from a JSON array
      * @param array JSON array to convert to a String array
      */
-    public static String[] getStringArrayFromJSON(final JSONArray array) {
+    private static String[] getStringArrayFromJSON(final JSONArray array) {
         final String[] stringArray = new String[array.length()];
         try {
             for (int i = 0; i < array.length(); ++i) {
