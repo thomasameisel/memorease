@@ -265,18 +265,18 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         final MemoreaInfo memoreaInfoClicked = mMemoreaListAdapter.getItem(position);
 
-        if (mDualPane) {
-            mMemoreaClicked = memoreaInfoClicked;
-            ((MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info)).updateFields(memoreaInfoClicked.getFields());
+        if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.mCompleted) {
+            final Intent memorizeScreenIntent = new Intent(this, MemorizeScreenActivity.class);
+            memorizeScreenIntent.putExtra("mTitle", memoreaInfoClicked.mTitle);
+            memorizeScreenIntent.putExtra("mQuestion", memoreaInfoClicked.mQuestion);
+            memorizeScreenIntent.putExtra("mAnswer", memoreaInfoClicked.mAnswer);
+            memorizeScreenIntent.putExtra("mHint", memoreaInfoClicked.mHint);
+            memorizeScreenIntent.putExtra("mId", memoreaInfoClicked.mId.toString());
+            startActivity(memorizeScreenIntent);
         } else {
-            if (memoreaInfoClicked.getTimeUntilNextAlarm() < 0 && !memoreaInfoClicked.mCompleted) {
-                final Intent memorizeScreenIntent = new Intent(this, MemorizeScreenActivity.class);
-                memorizeScreenIntent.putExtra("mTitle", memoreaInfoClicked.mTitle);
-                memorizeScreenIntent.putExtra("mQuestion", memoreaInfoClicked.mQuestion);
-                memorizeScreenIntent.putExtra("mAnswer", memoreaInfoClicked.mAnswer);
-                memorizeScreenIntent.putExtra("mHint", memoreaInfoClicked.mHint);
-                memorizeScreenIntent.putExtra("mId", memoreaInfoClicked.mId.toString());
-                startActivity(memorizeScreenIntent);
+            if (mDualPane) {
+                mMemoreaClicked = memoreaInfoClicked;
+                ((MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info)).updateFields(memoreaInfoClicked.getFields());
             } else {
                 final String[] info = new String[6];
                 info[0] = memoreaInfoClicked.mTitle;

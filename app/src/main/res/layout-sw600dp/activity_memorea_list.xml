@@ -17,6 +17,7 @@
             tools:layout="@layout/fragment_memorea_list"
             android:layout_width="300dp"
             android:layout_height="fill_parent"
+            android:background="@color/background_material_light"
             android:elevation="5dp"/>
         <View
             android:id="@+id/view_separator"
