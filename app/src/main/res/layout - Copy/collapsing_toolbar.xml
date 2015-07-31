@@ -2,14 +2,14 @@
 <android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/appbar"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="@dimen/collapsible_toolbar_height"
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.CollapsingToolbarLayout
         android:id="@+id/collapsing_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         android:fitsSystemWindows="true"
         android:background="@color/action_bar"
@@ -18,7 +18,7 @@
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_collapseMode="pin" />
 

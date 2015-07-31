@@ -4,5 +4,5 @@
     android:id="@+id/fragment_memorea_list"
     android:name="com.tarian.memorease.MemoreaListFragment"
     tools:layout="@layout/fragment_memorea_list"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"/>
