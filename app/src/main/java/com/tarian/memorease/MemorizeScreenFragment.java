@@ -62,8 +62,8 @@ public class MemorizeScreenFragment extends Fragment {
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
         if (getView() != null) {
-            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
-            savedInstanceState.putString(MEMOREA_HINT, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
+            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView)getView().findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(MEMOREA_HINT, ((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString());
         }
 
         super.onSaveInstanceState(savedInstanceState);
