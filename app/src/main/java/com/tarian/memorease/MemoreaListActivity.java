@@ -94,6 +94,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     @Override
     public void onResume() {
         super.onResume();
+        clearNotifications();
         registerReceivers();
         if (sSharedPreferences.getString(MEMOREA_ORDER, "") != null) {
             final String[] memoreaOrder = sSharedPreferences.getString(MEMOREA_ORDER, "").split(ID_SEPARATOR);
@@ -252,7 +253,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
 
         registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
         registerReceiver(mNotificationReceiver, new IntentFilter(NOTIFICATION_READY));
-        clearNotifications();
     }
 
     private void unregisterReceivers() {
@@ -331,6 +331,11 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
         cancelCardNotificationGenerator(deletedCard);
         if (deletedCard.getTimeUntilNextAlarm() < 0 && mNumActiveNotifications == 1) {
             clearNotifications();
+            mNumActiveNotifications = 0;
+            sSharedPreferences.edit().putInt(NUM_ACTIVE_NOTIFICATIONS, 0).apply();
+        } else {
+            --mNumActiveNotifications;
+            sSharedPreferences.edit().putInt(NUM_ACTIVE_NOTIFICATIONS, mNumActiveNotifications).apply();
         }
         mMemoreaListAdapter.onItemDismiss(viewHolder.getAdapterPosition());
         initializeNoMemoreasView();
@@ -347,8 +352,6 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     }
 
     private void clearNotifications() {
-        mNumActiveNotifications = 0;
-        sSharedPreferences.edit().putInt(NUM_ACTIVE_NOTIFICATIONS, 0).apply();
         final NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(0);
     }
