@@ -23,6 +23,6 @@ public class MemorizeScreenAnswerFragment extends Fragment {
     }
 
     private void setAnswer(final View view) {
-        ((TextView)view.findViewById(R.id.text_view_answer)).setText(getActivity().getIntent().getStringExtra("mAnswer"));
+        ((TextView)view.findViewById(R.id.text_view_answer)).setText(getActivity().getIntent().getStringExtra(MemoreaListActivity.ANSWER));
     }
 }

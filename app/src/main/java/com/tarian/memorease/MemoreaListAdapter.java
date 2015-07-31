@@ -1,5 +1,6 @@
 package com.tarian.memorease;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,16 @@ import java.util.UUID;
  * Adapter for the RecyclerView
  */
 public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.MemoreaViewHolder> {
+    private static final String GMT = "GMT";
+
     private List<MemoreaInfo> mMemoreaList;
     private AdapterView.OnItemClickListener mOnItemClickListener;
 
-    public MemoreaListAdapter() {
+    private Context mContext;
+
+    public MemoreaListAdapter(final Context context) {
         this.mMemoreaList = new ArrayList<>();
+        this.mContext = context;
     }
 
     public void setMOnItemClickListener(final AdapterView.OnItemClickListener mOnItemClickListener) {
@@ -39,7 +45,7 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
     public void onBindViewHolder(final MemoreaViewHolder holder, final int position) {
         final MemoreaInfo memoreaInfo = mMemoreaList.get(position);
         holder.setTitle(memoreaInfo.mTitle);
-        setNextMemorizationTime("Memorization ready!", memoreaInfo, holder);
+        setNextMemorizationTime(memoreaInfo, holder);
     }
 
     /**
@@ -147,26 +153,26 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
     }
 
-    private void setNextMemorizationTime(final String memorizationReady, final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
+    private void setNextMemorizationTime(final MemoreaInfo memoreaInfo, final MemoreaViewHolder holder) {
         if (!memoreaInfo.mCompleted) {
             final long timeUntilNextAlarm = memoreaInfo.getTimeUntilNextAlarm();
             if (timeUntilNextAlarm < 0) {
-                holder.setSpecialMessage(memorizationReady);
+                holder.setSpecialMessage(mContext.getString(R.string.memorization_ready));
             } else {
-                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(GMT));
                 calendar.setTimeInMillis(timeUntilNextAlarm);
                 if (calendar.get(Calendar.MONTH) > 0) {
-                    holder.setNextMemorization(calendar.get(Calendar.MONTH)+1, "month");
+                    holder.setNextMemorization(calendar.get(Calendar.MONTH)+1, mContext.getString(R.string.month_unit));
                 } else if (calendar.get(Calendar.DAY_OF_MONTH) > 1) {
-                    holder.setNextMemorization(calendar.get(Calendar.DAY_OF_MONTH), "day");
+                    holder.setNextMemorization(calendar.get(Calendar.DAY_OF_MONTH), mContext.getString(R.string.day_unit));
                 } else if (calendar.get(Calendar.HOUR) > 0) {
-                    holder.setNextMemorization(calendar.get(Calendar.HOUR)+1, "hour");
+                    holder.setNextMemorization(calendar.get(Calendar.HOUR)+1, mContext.getString(R.string.hour_unit));
                 } else {
-                    holder.setNextMemorization(calendar.get(Calendar.MINUTE)+1, "minute");
+                    holder.setNextMemorization(calendar.get(Calendar.MINUTE)+1, mContext.getString(R.string.minute_unit));
                 }
             }
         } else {
-            holder.setSpecialMessage("Completed!");
+            holder.setSpecialMessage(mContext.getString(R.string.completed));
         }
     }
 

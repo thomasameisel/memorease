@@ -21,9 +21,7 @@ import com.tarian.memorease.views.CircleAngleAnimation;
  * Fragment that shows the mQuestion and prompts the user to ask for a mHint or go to the mAnswer
  */
 public class MemorizeScreenFragment extends Fragment {
-    public static final String CIRCLE_VISIBLE = "circleVisible";
-    public static final String MEMOREA_QUESTION = "memoreaQuestion";
-    public static final String MEMOREA_HINT = "memoreaHint";
+    private static final String CIRCLE_VISIBLE = "circleVisible";
 
     private int mSpaceBetweenButtons;
     private boolean mCircleVisible;
@@ -35,8 +33,8 @@ public class MemorizeScreenFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         mSpaceBetweenButtons = (int)dpToPx(50);
         final View view = inflater.inflate(R.layout.fragment_memorize_screen, container, false);
-        ((TextView)view.findViewById(R.id.text_view_question)).setText(getActivity().getIntent().getStringExtra("mQuestion"));
-        ((TextView)view.findViewById(R.id.text_view_hint)).setText(getActivity().getIntent().getStringExtra("mHint"));
+        ((TextView)view.findViewById(R.id.text_view_question)).setText(getActivity().getIntent().getStringExtra(MemoreaListActivity.QUESTION));
+        ((TextView)view.findViewById(R.id.text_view_hint)).setText(getActivity().getIntent().getStringExtra(MemoreaListActivity.HINT));
 
         if (savedInstanceState == null || savedInstanceState.getBoolean(CIRCLE_VISIBLE, true)) {
             mCircleVisible = true;
@@ -48,7 +46,7 @@ public class MemorizeScreenFragment extends Fragment {
         } else {
             mCircleVisible = false;
             view.findViewById(R.id.circle).setAlpha(0f);
-            if (!savedInstanceState.getString(MEMOREA_HINT, "").matches("")) {
+            if (!savedInstanceState.getString(MemoreaListActivity.HINT, "").matches("")) {
                 view.findViewById(R.id.button_hint).setAlpha(1f);
             } else {
                 removeHintButton(view);
@@ -62,8 +60,8 @@ public class MemorizeScreenFragment extends Fragment {
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
         if (getView() != null) {
-            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView)getView().findViewById(R.id.text_view_question)).getText().toString());
-            savedInstanceState.putString(MEMOREA_HINT, ((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString());
+            savedInstanceState.putString(MemoreaListActivity.QUESTION, ((TextView)getView().findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(MemoreaListActivity.HINT, ((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString());
         }
 
         super.onSaveInstanceState(savedInstanceState);

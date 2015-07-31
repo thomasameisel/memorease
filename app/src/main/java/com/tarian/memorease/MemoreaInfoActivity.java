@@ -25,8 +25,8 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         sSharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
-        mMemoreaId = getIntent().getStringExtra("memorea_id");
-        mMemoreaFields = getIntent().getStringArrayExtra("memorea_info");
+        mMemoreaId = getIntent().getStringExtra(MemoreaListActivity.ID);
+        mMemoreaFields = getIntent().getStringArrayExtra(MemoreaListActivity.MEMOREA_INFO);
 
         MemoreaInfoFragment memoreaInfoFragment = (MemoreaInfoFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_memorea_info);
         memoreaInfoFragment.updateFields(mMemoreaFields);
@@ -56,9 +56,9 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
     public void editMemorea(final View view) {
         // dialog to edit memorea
         final Bundle memoreaInfoBundle = new Bundle();
-        memoreaInfoBundle.putString("dialog_title", getString(R.string.edit_memorea_title));
-        memoreaInfoBundle.putBoolean("is_editing", true);
-        memoreaInfoBundle.putStringArray("edit_memorea_info", mMemoreaFields);
+        memoreaInfoBundle.putString(MemoreaListActivity.DIALOG_TITLE, getString(R.string.edit_memorea_title));
+        memoreaInfoBundle.putBoolean(MemoreaListActivity.IS_EDITING, true);
+        memoreaInfoBundle.putStringArray(MemoreaListActivity.MEMOREA_INFO, mMemoreaFields);
 
         final MemoreaDialog memoreaDialog = new MemoreaDialog();
         memoreaDialog.setArguments(memoreaInfoBundle);

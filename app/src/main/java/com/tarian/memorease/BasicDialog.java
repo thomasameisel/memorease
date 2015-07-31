@@ -13,6 +13,9 @@ import android.widget.Button;
  * Popup dialog fragment for a basic dialog fragment with a mTitle, message, and OK button
  */
 public class BasicDialog extends DialogFragment {
+    private static final String DIALOG_TITLE = "dialogTitle";
+    private static final String DIALOG_MESSAGE = "dialogMessage";
+
     /**
      * Creates a new dialog fragment
      * @param title Title of the dialog fragment
@@ -21,8 +24,8 @@ public class BasicDialog extends DialogFragment {
     public static BasicDialog newInstance(final String title, final String message) {
         final BasicDialog frag = new BasicDialog();
         final Bundle args = new Bundle();
-        args.putString("mTitle", title);
-        args.putString("message", message);
+        args.putString(DIALOG_TITLE, title);
+        args.putString(DIALOG_MESSAGE, message);
         frag.setArguments(args);
         return frag;
     }
@@ -30,8 +33,8 @@ public class BasicDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final String title = getArguments().getString("mTitle");
-        final String message = getArguments().getString("message");
+        final String title = getArguments().getString(DIALOG_TITLE);
+        final String message = getArguments().getString(DIALOG_MESSAGE);
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle(title)

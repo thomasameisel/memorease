@@ -19,7 +19,7 @@
                 android:id="@+id/edit_text_title"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/mTitle"
+                android:hint="@string/title"
                 android:textSize="16sp"
                 android:maxLines="1"
                 android:inputType="textCapWords"/>
@@ -33,7 +33,7 @@
                 android:id="@+id/edit_text_question"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/mQuestion"
+                android:hint="@string/question"
                 android:textSize="16sp"
                 android:maxLines="1"
                 android:inputType="textCapSentences"/>
@@ -47,7 +47,7 @@
                 android:id="@+id/edit_text_answer"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/mAnswer"
+                android:hint="@string/answer"
                 android:textSize="16sp"
                 android:inputType="textMultiLine|textCapSentences"/>
         </android.support.design.widget.TextInputLayout>

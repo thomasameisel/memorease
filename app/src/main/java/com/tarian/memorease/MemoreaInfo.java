@@ -74,7 +74,7 @@ public class MemoreaInfo {
      * Gets the millseconds of the next memorization time since the epoch
      */
     public long getTimeNextAlarm() {
-        return MemoreaListActivity.sSharedPreferences.getLong(String.format("%s_notification_time", mId.toString()), 0);
+        return MemoreaListActivity.sSharedPreferences.getLong(String.format(MemoreaListActivity.NOTIFICATION_TIME, mId.toString()), 0);
     }
 
     /**

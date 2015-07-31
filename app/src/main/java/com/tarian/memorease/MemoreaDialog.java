@@ -44,7 +44,7 @@ public class MemoreaDialog extends DialogFragment {
         try {
             mMemoreaListener = (OnSaveMemoreaDialog)activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement OnSaveMemoreaDialog");
+            throw new ClassCastException(activity.toString() + " must implement OnSaveMemoreaDialog");
         }
     }
 
@@ -56,14 +56,14 @@ public class MemoreaDialog extends DialogFragment {
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View addView = inflater.inflate(R.layout.fragment_add_memorea, null);
         initEditText(addView);
-        if (getArguments() != null && getArguments().getStringArray("edit_memorea_info") != null) {
-            setEditTextFields(getArguments().getStringArray("edit_memorea_info"));
+        if (getArguments() != null && getArguments().getBoolean(MemoreaListActivity.IS_EDITING, false)) {
+            setEditTextFields(getArguments().getStringArray(MemoreaListActivity.MEMOREA_INFO));
         }
 
         builder.setView(addView)
                 .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null)
-                .setTitle(getArguments().getString("dialog_title"));
+                .setTitle(getArguments().getString(MemoreaListActivity.DIALOG_TITLE));
         final Dialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);

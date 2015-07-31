@@ -21,23 +21,21 @@ public class AlarmReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        final Intent memoreaIntent = new Intent("NOTIFICATION_READY");
+        final Intent memoreaIntent = new Intent(MemoreaListActivity.NOTIFICATION_READY);
         context.sendBroadcast(memoreaIntent);
 
-        final String title = intent.getStringExtra("mTitle");
+        final String title = intent.getStringExtra(MemoreaListActivity.TITLE);
 
         final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         final Notification.Builder builder = new Notification.Builder(context);
         final Intent alarmIntent;
-        final String notificationTitle = "Memorease";
+        final String notificationTitle = context.getString(R.string.app_name);
         final String notificationText;
-        if (intent.getBooleanExtra("multiple_notifications", true)) {
-            alarmIntent = new Intent (context, MemoreaListActivity.class);
-            notificationText = "Multiple memorizations ready";
+        alarmIntent = new Intent (context, MemoreaListActivity.class);
+        if (intent.getBooleanExtra(MemoreaListActivity.MULTIPLE_NOTIFICATIONS, true)) {
+            notificationText = context.getString(R.string.notification_multiple_ready);
         } else {
-            alarmIntent = new Intent (context, MemorizeScreenActivity.class);
-            alarmIntent.putExtras(intent);
-            notificationText = String.format("%s memorea is ready for memorization", title);
+            notificationText = String.format(context.getString(R.string.notification_single_ready), title);
         }
 
         final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
