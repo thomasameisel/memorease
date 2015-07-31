@@ -44,7 +44,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         builder.setContentIntent(contentIntent)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationText)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.app_icon)
                 .setAutoCancel(true);
         manager.notify(0, builder.build());
     }

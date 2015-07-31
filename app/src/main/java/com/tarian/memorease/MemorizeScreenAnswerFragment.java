@@ -12,7 +12,6 @@ import android.widget.TextView;
  * Must have an Extra String mAnswer
  */
 public class MemorizeScreenAnswerFragment extends Fragment {
-
     public MemorizeScreenAnswerFragment() {
     }
 

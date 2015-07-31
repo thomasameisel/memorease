@@ -31,10 +31,8 @@
                 android:gravity="center_horizontal"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-    <fragment
-        android:id="@+id/fragment_memorize_screen"
-        android:name="com.tarian.memorease.MemorizeScreenFragment"
-        tools:layout="@layout/fragment_memorize_screen"
+    <FrameLayout
+        android:id="@+id/fragment_holder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/appbar"/>

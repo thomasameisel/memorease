@@ -21,7 +21,7 @@ import com.tarian.memorease.views.CircleAngleAnimation;
  * Fragment that shows the mQuestion and prompts the user to ask for a mHint or go to the mAnswer
  */
 public class MemorizeScreenFragment extends Fragment {
-    public static final String CIRCLE_VISIBLE = "buttonsVisible";
+    public static final String CIRCLE_VISIBLE = "circleVisible";
     public static final String MEMOREA_QUESTION = "memoreaQuestion";
     public static final String MEMOREA_HINT = "memoreaHint";
 
@@ -49,16 +49,19 @@ public class MemorizeScreenFragment extends Fragment {
             mCircleVisible = false;
             view.findViewById(R.id.circle).setAlpha(0f);
             if (!savedInstanceState.getString(MEMOREA_HINT, "").matches("")) {
-                view.findViewById(R.id.button_give_hint).setAlpha(1f);
+                view.findViewById(R.id.button_hint).setAlpha(1f);
             } else {
-                view.findViewById(R.id.button_give_hint).setVisibility(View.GONE);
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)view.findViewById(R.id.button_answer).getLayoutParams();
-                layoutParams.setMargins(0, 0, 0, 0);
+                removeHintButton(view);
             }
             view.findViewById(R.id.button_answer).setAlpha(1f);
-            setFields(view, savedInstanceState.getString(MEMOREA_QUESTION, ""), savedInstanceState.getString(MEMOREA_HINT, ""));
         }
         return view;
+    }
+
+    private void removeHintButton(final View view) {
+        view.findViewById(R.id.button_hint).setVisibility(View.GONE);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)view.findViewById(R.id.button_answer).getLayoutParams();
+        layoutParams.setMargins(0, 0, 0, 0);
     }
 
     private Animation.AnimationListener createAnimationListener(final View view) {
@@ -73,15 +76,15 @@ public class MemorizeScreenFragment extends Fragment {
                 final AnimatorSet animationSet = new AnimatorSet();
 
                 if (((TextView) view.findViewById(R.id.text_view_hint)).getText().toString().matches("")) {
+                    removeHintButton(view);
                     animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
-                            createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
-                            createTranslationXAnimator(view.findViewById(R.id.button_answer), 0 - mSpaceBetweenButtons, 0 - mSpaceBetweenButtons));
+                            createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1));
                 } else {
                     animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
                             createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
-                            createFadeAnimator(view.findViewById(R.id.button_give_hint), 0, 1),
+                            createFadeAnimator(view.findViewById(R.id.button_hint), 0, 1),
                             createTranslationXAnimator(view.findViewById(R.id.button_answer), 0 - mSpaceBetweenButtons, 0),
-                            createTranslationXAnimator(view.findViewById(R.id.button_give_hint), mSpaceBetweenButtons, 0));
+                            createTranslationXAnimator(view.findViewById(R.id.button_hint), mSpaceBetweenButtons, 0));
                 }
                 animationSet.start();
             }
@@ -95,16 +98,12 @@ public class MemorizeScreenFragment extends Fragment {
     @Override
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
+        if (getView() != null) {
+            savedInstanceState.putString(MEMOREA_QUESTION, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(MEMOREA_HINT, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
+        }
 
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Sets the mQuestion and mHint fields, must be called after onCreateView
-     */
-    public void setFields(final View view, final String question, final String hint) {
-        ((TextView)view.findViewById(R.id.text_view_question)).setText(question);
-        ((TextView)view.findViewById(R.id.text_view_hint)).setText(hint);
     }
 
     /**
@@ -115,7 +114,7 @@ public class MemorizeScreenFragment extends Fragment {
             final AnimatorSet animationSet = new AnimatorSet();
             animationSet.playTogether(createTranslationYAnimator(getView().findViewById(R.id.text_view_question), 0, 0 - getView().findViewById(R.id.text_view_hint).getHeight()),
                     createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1),
-                    createFadeAnimator(getView().findViewById(R.id.button_give_hint), 1, 0),
+                    createFadeAnimator(getView().findViewById(R.id.button_hint), 1, 0),
                     createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0, 0 - mSpaceBetweenButtons));
             animationSet.start();
         }

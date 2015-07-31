@@ -11,7 +11,8 @@
         card:cardCornerRadius="2dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:elevation="2dp">
 
         <RelativeLayout
             android:id="@+id/relative_layout_memorea_card"
