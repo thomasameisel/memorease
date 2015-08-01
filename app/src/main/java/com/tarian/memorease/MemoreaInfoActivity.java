@@ -1,6 +1,5 @@
 package com.tarian.memorease;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import org.json.JSONArray;
 
 
 public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDialog.OnSaveMemoreaDialog {
-    private static SharedPreferences sSharedPreferences;
-
     private String mMemoreaId;
     private String[] mMemoreaFields;
 
@@ -24,7 +21,6 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
         setContentView(R.layout.activity_memorea_info);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        sSharedPreferences = getSharedPreferences(getString(R.string.prefence_file_key), Context.MODE_PRIVATE);
         mMemoreaId = getIntent().getStringExtra(MemoreaListActivity.ID);
         mMemoreaFields = getIntent().getStringArrayExtra(MemoreaListActivity.MEMOREA_INFO);
 
@@ -76,7 +72,7 @@ public class MemoreaInfoActivity extends AppCompatActivity implements MemoreaDia
     }
 
     private static void addMemoreaSharedPref(final String id, final String[] fields) {
-        final SharedPreferences.Editor sharedPreferencesEditor = sSharedPreferences.edit();
+        final SharedPreferences.Editor sharedPreferencesEditor = MemoreaListActivity.sSharedPreferences.edit();
         sharedPreferencesEditor.putString(id, getJSONStringFromArray(fields).toString());
         sharedPreferencesEditor.apply();
     }

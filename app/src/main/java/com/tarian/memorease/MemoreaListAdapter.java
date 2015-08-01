@@ -176,6 +176,16 @@ public class MemoreaListAdapter extends RecyclerView.Adapter<MemoreaListAdapter.
         }
     }
 
+    public int getNumMemoreaReadyMemorize() {
+        int i = 0;
+        for (MemoreaInfo memoreaInfo : mMemoreaList) {
+            if (memoreaInfo.getTimeUntilNextAlarm() < 0) {
+                ++i;
+            }
+        }
+        return i;
+    }
+
     /**
      * Binds the memorea to its view
      */

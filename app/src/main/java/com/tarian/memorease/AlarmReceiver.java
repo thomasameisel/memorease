@@ -24,26 +24,17 @@ public class AlarmReceiver extends BroadcastReceiver {
         final Intent memoreaIntent = new Intent(MemoreaListActivity.NOTIFICATION_READY);
         context.sendBroadcast(memoreaIntent);
 
-        final String title = intent.getStringExtra(MemoreaListActivity.TITLE);
-
         final NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         final Notification.Builder builder = new Notification.Builder(context);
-        final Intent alarmIntent;
-        final String notificationTitle = context.getString(R.string.app_name);
-        final String notificationText;
-        alarmIntent = new Intent (context, MemoreaListActivity.class);
-        if (intent.getBooleanExtra(MemoreaListActivity.MULTIPLE_NOTIFICATIONS, true)) {
-            notificationText = context.getString(R.string.notification_multiple_ready);
-        } else {
-            notificationText = String.format(context.getString(R.string.notification_single_ready), title);
-        }
+        final Intent alarmIntent = new Intent (context, MemoreaListActivity.class);;
 
         final PendingIntent contentIntent = PendingIntent.getActivity(context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         builder.setContentIntent(contentIntent)
-                .setContentTitle(notificationTitle)
-                .setContentText(notificationText)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setContentText(context.getString(R.string.notification_ready))
                 .setSmallIcon(R.drawable.app_icon)
                 .setAutoCancel(true);
+
         manager.notify(0, builder.build());
     }
 }

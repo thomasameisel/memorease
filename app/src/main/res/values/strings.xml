@@ -33,8 +33,7 @@
     <string name="answer_label">Answer:&#160;</string>
     <string name="hint_label">Hint:&#160;</string>
     <string name="title_label">Title:&#160;</string>
-    <string name="notification_multiple_ready">Multiple notifications ready</string>
-    <string name="notification_single_ready">%s memorea is ready for memorization</string>
+    <string name="notification_ready">Memorea is ready for memorization</string>
     <string name="snackbar_deleted_message">Deleted the %s Memorea</string>
     <string name="undo">Undo</string>
     <string name="completed">Completed!</string>
