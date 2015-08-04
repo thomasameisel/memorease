@@ -25,6 +25,7 @@ public class MemorizeScreenActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorize_screen);
+        getWindow().setBackgroundDrawable(null);
         ((TextView) findViewById(R.id.text_view_toolbar_title)).setText(getIntent().getExtras().getString(MemoreaListActivity.TITLE));
 
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

@@ -64,6 +64,7 @@ public class MemoreaListActivity extends AppCompatActivity implements MemoreaDia
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memorea_list);
+        getWindow().setBackgroundDrawable(null);
         registerReceiver(mBroadcastReceiver, new IntentFilter(NOTIFICATION_READY));
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         if (getSupportActionBar() != null) {

@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     tools:context="com.tarian.memorease.MemorizeScreenAnswerFragment"
-    android:background="@color/background_material_light"
+    android:background="@null"
     android:clickable="true">
 
     <TextView
@@ -21,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/text_view_answer"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:background="@null">
 
         <Button
             style="?android:attr/borderlessButtonStyle"
