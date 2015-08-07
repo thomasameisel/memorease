@@ -1,21 +1,24 @@
-package com.tarian.memorease;
+package com.tarian.memorease.view.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.support.v4.graphics.drawable.DrawableCompat;
+import com.tarian.memorease.R;
 
 /**
  * Popup dialog fragment for either adding or editing a memorea<br>
@@ -23,6 +26,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
  * If is_editing is true, also requires String array of the memorea's information to pre-fill in the form
  */
 public class MemoreaDialog extends DialogFragment {
+
     /**
      * Listener for the result of either adding or editing a memorea
      */
@@ -31,8 +35,32 @@ public class MemoreaDialog extends DialogFragment {
          * Called when the Save button is pressed in the Memorea Dialog
          * @param fields String array of length 4 with the mTitle, mQuestion, mAnswer, and mHint
          */
-        void onSaveMemoreaDialog(String[] fields);
+        void onSaveMemoreaDialog(String id, String[] fields);
     }
+
+    public static Bundle getCallingArguments(String dialogTitle, boolean isEditing) {
+        final Bundle callingBundle = new Bundle();
+        callingBundle.putString(DIALOG_TITLE, dialogTitle);
+        callingBundle.putBoolean(IS_EDITING, isEditing);
+        return callingBundle;
+    }
+
+    public static Bundle getCallingArguments(String dialogTitle, boolean isEditing, Bundle bundle) {
+        final Bundle callingBundle = getCallingArguments(dialogTitle, isEditing);
+        callingBundle.putAll(bundle);
+        return callingBundle;
+    }
+
+    private static final String DIALOG_TITLE = "dialogTitle";
+    private static final String IS_EDITING = "isEditing";
+
+    private static final String ID = "id";
+    private static final String TITLE = "title";
+    private static final String QUESTION = "question";
+    private static final String ANSWER = "answer";
+    private static final String HINT = "hint";
+    private static final String LEVEL = "level";
+    private static final String NOTIFICATION_GENERATOR = "notificationGenerator";
 
     private EditText mTitle, mQuestion, mAnswer, mHint;
     private EditText[] mRequiredFields;
@@ -56,14 +84,14 @@ public class MemoreaDialog extends DialogFragment {
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View addView = inflater.inflate(R.layout.fragment_add_memorea, null);
         initEditText(addView);
-        if (getArguments() != null && getArguments().getBoolean(MemoreaListActivity.IS_EDITING, false)) {
-            setEditTextFields(getArguments().getStringArray(MemoreaListActivity.MEMOREA_INFO));
+        if (getArguments() != null && getArguments().getBoolean(IS_EDITING, false)) {
+            setEditTextFields();
         }
 
         builder.setView(addView)
                 .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null)
-                .setTitle(getArguments().getString(MemoreaListActivity.DIALOG_TITLE));
+                .setTitle(getArguments().getString(DIALOG_TITLE));
         final Dialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
@@ -72,7 +100,7 @@ public class MemoreaDialog extends DialogFragment {
 
     @Override
     public void onStart() {
-        super.onStart();    //super.onStart() is where dialog.show() is actually called on the underlying dialog, so we have to do it after this point
+        super.onStart();
         final AlertDialog d = (AlertDialog)getDialog();
         if(d != null) {
             final Button positiveButton = d.getButton(Dialog.BUTTON_POSITIVE);
@@ -80,13 +108,20 @@ public class MemoreaDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     if (requiredFieldsSet()) {
-                        final String[] updatedFields = new String[4];
-                        updatedFields[0] = ((EditText) getDialog().findViewById(R.id.edit_text_title)).getText().toString();
-                        updatedFields[1] = ((EditText) getDialog().findViewById(R.id.edit_text_question)).getText().toString();
-                        updatedFields[2] = ((EditText) getDialog().findViewById(R.id.edit_text_answer)).getText().toString();
-                        updatedFields[3] = ((EditText) getDialog().findViewById(R.id.edit_text_hint)).getText().toString();
-                        mMemoreaListener.onSaveMemoreaDialog(updatedFields);
+                        final String[] updatedFields = new String[6];
+                        updatedFields[0] = ((EditText) getDialog()
+                                .findViewById(R.id.edit_text_title)).getText().toString();
+                        updatedFields[1] = ((EditText) getDialog()
+                                .findViewById(R.id.edit_text_question)).getText().toString();
+                        updatedFields[2] = ((EditText) getDialog()
+                                .findViewById(R.id.edit_text_answer)).getText().toString();
+                        updatedFields[3] = ((EditText) getDialog()
+                                .findViewById(R.id.edit_text_hint)).getText().toString();
+                        updatedFields[4] = getArguments().getString(LEVEL);
+                        updatedFields[5] = getArguments().getString(NOTIFICATION_GENERATOR);
                         d.dismiss();
+                        mMemoreaListener.onSaveMemoreaDialog(getArguments().getString(ID),
+                                updatedFields);
                     } else {
                         setFocusToMissingFields();
                     }
@@ -131,10 +166,10 @@ public class MemoreaDialog extends DialogFragment {
         }
     }
 
-    private void setEditTextFields(final String[] memoreaInfo) {
-        mTitle.setText(memoreaInfo[0]);
-        mQuestion.setText(memoreaInfo[1]);
-        mAnswer.setText(memoreaInfo[2]);
-        mHint.setText(memoreaInfo[3]);
+    private void setEditTextFields() {
+        mTitle.setText(getArguments().getString(TITLE));
+        mQuestion.setText(getArguments().getString(QUESTION));
+        mAnswer.setText(getArguments().getString(ANSWER));
+        mHint.setText(getArguments().getString(HINT));
     }
 }

@@ -8,7 +8,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.tarian.memorease.MemoreaListActivity"
+            android:name="com.tarian.memorease.view.activity.MemoreaListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -17,14 +17,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.tarian.memorease.MemorizeScreenActivity"
+            android:name="com.tarian.memorease.view.activity.MemorizeScreenActivity"
             android:label="@string/title_activity_memorize_screen">
         </activity>
 
         <receiver android:name="com.tarian.memorease.AlarmReceiver" />
 
         <activity
-            android:name="com.tarian.memorease.MemoreaInfoActivity"
+            android:name="com.tarian.memorease.view.activity.MemoreaInfoActivity"
             android:label="@string/title_activity_memorea_info" >
         </activity>
     </application>

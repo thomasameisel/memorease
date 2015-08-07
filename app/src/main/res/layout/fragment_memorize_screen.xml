@@ -26,7 +26,7 @@
         android:maxLines="3"
         android:ellipsize="end"
         android:alpha="0"/>
-    <com.tarian.memorease.views.Circle
+    <com.tarian.memorease.custom_views.Circle
         android:id="@+id/circle"
         android:layout_width="50dp"
         android:layout_height="50dp"

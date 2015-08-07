@@ -1,21 +1,24 @@
-package com.tarian.memorease;
+package com.tarian.memorease.model;
 
+import android.content.Context;
 import android.os.SystemClock;
+
+import com.tarian.memorease.MemoreaSharedPreferences;
 
 import java.util.UUID;
 
 /**
  * Information for a memorea
  */
-public class MemoreaInfo {
-    String mTitle;
-    String mQuestion;
-    String mAnswer;
-    String mHint;
-    int mMemorizationLevel;
-    UUID mId;
-    int mNotificationGeneratorId;
-    boolean mCompleted = false;
+public class Memorea {
+    public String mTitle;
+    public String mQuestion;
+    public String mAnswer;
+    public String mHint;
+    public int mMemorizationLevel;
+    public UUID mId;
+    public int mNotificationId;
+    public boolean mCompleted = false;
 
     private long[] mMemorizationTimes = {120000L, 600000L, 3600000L, 18000000L, 86400000L, 432000000L, 2160000000L, 13046400000L};
 
@@ -26,13 +29,19 @@ public class MemoreaInfo {
      * @param mHint Hint of the memorea. If user does not enter this value, set it to empty string
      * @param mMemorizationLevel Index of the memorization, milliseconds in mMemorizationTimes
      */
-    public MemoreaInfo(final String mTitle, final String mQuestion, final String mAnswer, final String mHint, final int mMemorizationLevel) {
+    public Memorea(final String mTitle, final String mQuestion, final String mAnswer,
+                   final String mHint, final int mMemorizationLevel) {
         this.mTitle = mTitle;
         this.mQuestion = mQuestion;
         this.mAnswer = mAnswer;
         this.mHint = mHint;
         this.mMemorizationLevel = mMemorizationLevel;
         this.mCompleted = mMemorizationLevel >= mMemorizationTimes.length;
+    }
+
+    public Memorea(final String[] fields) {
+        this(fields[0], fields[1], fields[2], fields[3], Integer.valueOf(fields[4]));
+        this.mNotificationId = Integer.valueOf(fields[5]);
     }
 
     /**
@@ -43,7 +52,7 @@ public class MemoreaInfo {
     }
 
     /**
-     * Returns a String array with the memorea's mTitle, mQuestion, mAnswer, mHint, mMemorizationLevel, and mNotificationGeneratorId
+     * Returns a String array with the memorea's mTitle, mQuestion, mAnswer, mHint, mMemorizationLevel, and mNotificationId
      */
     public String[] getFields() {
         String[] fields = new String[6];
@@ -52,29 +61,22 @@ public class MemoreaInfo {
         fields[2] = mAnswer;
         fields[3] = mHint;
         fields[4] = Integer.toString(mMemorizationLevel);
-        fields[5] = Integer.toString(mNotificationGeneratorId);
+        fields[5] = Integer.toString(mNotificationId);
         return fields;
-    }
-
-    /**
-     * Returns the number of total memorization levels
-     */
-    public int getTotalMemorizationLevels() {
-        return mMemorizationTimes.length;
     }
 
     /**
      * Gets the milliseconds until the next memorization time
      */
-    public long getTimeUntilNextAlarm() {
-        return getTimeNextAlarm()- SystemClock.elapsedRealtime();
+    public long getTimeUntilNextAlarm(Context context) {
+        return getTimeNextAlarm(context)- SystemClock.elapsedRealtime();
     }
 
     /**
      * Gets the millseconds of the next memorization time since the epoch
      */
-    public long getTimeNextAlarm() {
-        return MemoreaListActivity.sSharedPreferences.getLong(String.format(MemoreaListActivity.NOTIFICATION_TIME, mId.toString()), 0);
+    public long getTimeNextAlarm(Context context) {
+        return MemoreaSharedPreferences.getNotificationTime(context, mId.toString());
     }
 
     /**

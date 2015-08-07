@@ -1,4 +1,4 @@
-package com.tarian.memorease.views;
+package com.tarian.memorease.custom_views;
 
 import android.content.Context;
 import android.content.res.Resources;

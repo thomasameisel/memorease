@@ -1,73 +1,68 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:orientation="vertical"
     android:clickable="true"
     tools:context="com.tarian.memorease.MemoreaInfoFragment"
     android:background="@color/background_material_light">
 
-    <ScrollView
+    <GridLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:useDefaultMargins="true"
+        android:paddingTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
-        <GridLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:columnCount="2"
-            android:useDefaultMargins="true"
-            android:paddingTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp">
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
-                android:text="@string/title_label"/>
-            <TextView
-                android:id="@+id/text_view_memorea_info_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
-                android:text="@string/question_label"
-                android:paddingTop="10dp"/>
-            <TextView
-                android:id="@+id/text_view_memorea_info_question"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
-                android:text="@string/answer_label"
-                android:paddingTop="10dp"/>
-            <TextView
-                android:id="@+id/text_view_memorea_info_answer"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
-            <TextView
-                android:id="@+id/text_view_memorea_info_hint_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/card_text_size"
-                android:text="@string/hint_label"
-                android:paddingTop="10dp"/>
-            <TextView
-                android:id="@+id/text_view_memorea_info_hint"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:textSize="@dimen/card_text_size"/>
-        </GridLayout>
-    </ScrollView>
-</FrameLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/card_text_size"
+            android:text="@string/title_label"/>
+        <TextView
+            android:id="@+id/text_view_memorea_info_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:textSize="@dimen/card_text_size"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/card_text_size"
+            android:text="@string/question_label"
+            android:paddingTop="10dp"/>
+        <TextView
+            android:id="@+id/text_view_memorea_info_question"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:textSize="@dimen/card_text_size"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/card_text_size"
+            android:text="@string/answer_label"
+            android:paddingTop="10dp"/>
+        <TextView
+            android:id="@+id/text_view_memorea_info_answer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:textSize="@dimen/card_text_size"/>
+        <TextView
+            android:id="@+id/text_view_memorea_info_hint_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/card_text_size"
+            android:text="@string/hint_label"
+            android:paddingTop="10dp"/>
+        <TextView
+            android:id="@+id/text_view_memorea_info_hint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:textSize="@dimen/card_text_size"/>
+    </GridLayout>
+</ScrollView>

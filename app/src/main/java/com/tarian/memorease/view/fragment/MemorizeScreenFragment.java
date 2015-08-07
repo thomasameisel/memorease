@@ -1,9 +1,11 @@
-package com.tarian.memorease;
+package com.tarian.memorease.view.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.support.v4.app.Fragment;
+import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -13,15 +15,23 @@ import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.tarian.memorease.views.Circle;
-import com.tarian.memorease.views.CircleAngleAnimation;
+import com.tarian.memorease.R;
+import com.tarian.memorease.presenter.MemorizeScreenPresenter;
+import com.tarian.memorease.custom_views.Circle;
+import com.tarian.memorease.custom_views.CircleAngleAnimation;
+
+import nucleus.factory.RequiresPresenter;
+import nucleus.view.NucleusSupportFragment;
 
 
 /**
  * Fragment that shows the mQuestion and prompts the user to ask for a mHint or go to the mAnswer
  */
-public class MemorizeScreenFragment extends Fragment {
+@RequiresPresenter(MemorizeScreenPresenter.class)
+public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScreenPresenter> {
     private static final String CIRCLE_VISIBLE = "circleVisible";
+
+    private String mQuestion, mHint;
 
     private int mSpaceBetweenButtons;
     private boolean mCircleVisible;
@@ -29,12 +39,25 @@ public class MemorizeScreenFragment extends Fragment {
     public MemorizeScreenFragment() {
     }
 
+    @SuppressLint("ValidFragment")
+    public MemorizeScreenFragment(String question, String hint) {
+        mQuestion = question;
+        mHint = hint;
+    }
+
+    @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+
+        removeNotification();
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         mSpaceBetweenButtons = (int)dpToPx(50);
         final View view = inflater.inflate(R.layout.fragment_memorize_screen, container, false);
-        ((TextView)view.findViewById(R.id.text_view_question)).setText(getActivity().getIntent().getStringExtra(MemoreaListActivity.QUESTION));
-        ((TextView)view.findViewById(R.id.text_view_hint)).setText(getActivity().getIntent().getStringExtra(MemoreaListActivity.HINT));
+        ((TextView)view.findViewById(R.id.text_view_question)).setText(mQuestion);
+        ((TextView)view.findViewById(R.id.text_view_hint)).setText(mHint);
 
         if (savedInstanceState == null || savedInstanceState.getBoolean(CIRCLE_VISIBLE, true)) {
             mCircleVisible = true;
@@ -46,7 +69,7 @@ public class MemorizeScreenFragment extends Fragment {
         } else {
             mCircleVisible = false;
             view.findViewById(R.id.circle).setAlpha(0f);
-            if (!savedInstanceState.getString(MemoreaListActivity.HINT, "").matches("")) {
+            if (!savedInstanceState.getString(mHint, "").matches("")) {
                 view.findViewById(R.id.button_hint).setAlpha(1f);
             } else {
                 removeHintButton(view);
@@ -60,8 +83,8 @@ public class MemorizeScreenFragment extends Fragment {
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
         if (getView() != null) {
-            savedInstanceState.putString(MemoreaListActivity.QUESTION, ((TextView)getView().findViewById(R.id.text_view_question)).getText().toString());
-            savedInstanceState.putString(MemoreaListActivity.HINT, ((TextView)getView().findViewById(R.id.text_view_hint)).getText().toString());
+            savedInstanceState.putString(mQuestion, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(mHint, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
         }
 
         super.onSaveInstanceState(savedInstanceState);
@@ -116,6 +139,12 @@ public class MemorizeScreenFragment extends Fragment {
             public void onAnimationRepeat(final Animation animation) {
             }
         };
+    }
+
+    private void removeNotification() {
+        final NotificationManager notificationManager = (NotificationManager) getActivity()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
     }
 
     private float dpToPx(final int dp) {

@@ -1,4 +1,4 @@
-package com.tarian.memorease.views;
+package com.tarian.memorease.custom_views;
 
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
