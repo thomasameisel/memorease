@@ -31,8 +31,10 @@ public class MemorizeScreenAnswerFragment extends NucleusSupportFragment<Memoriz
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_memorize_screen_answer, container, false);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_memorize_screen_answer, container,
+                false);
         ((TextView)view.findViewById(R.id.text_view_answer)).setText(mAnswer);
         return view;
     }

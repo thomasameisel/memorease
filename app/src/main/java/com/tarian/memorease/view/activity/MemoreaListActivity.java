@@ -81,26 +81,24 @@ public class MemoreaListActivity extends NucleusAppCompatActivity<MemoreaListPre
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        if (mListFragmentStack.peek() instanceof MemoreaListFragment) {
-            final Memorea memorea = ((MemoreaListFragment)mListFragmentStack.peek())
-                    .getMemoreaByPosition(position);
+        final Memorea memorea = ((MemoreaListFragment)mListFragmentStack.peek())
+                .getMemoreaByPosition(position);
 
-            if (memorea.getTimeUntilNextAlarm(this) < 0 && !memorea.mCompleted) {
-                final Intent memorizeScreenIntent = MemorizeScreenActivity
-                        .getCallingIntent(this, memorea);
-                startActivity(memorizeScreenIntent);
-            } else {
-                if (mDualPane) {
-                    if (mInfoFragmentStack.peek() instanceof MemoreaInfoFragment) {
-                        ((MemoreaInfoFragment) mInfoFragmentStack.peek())
-                                .updateFields(memorea.mTitle, memorea.mQuestion, memorea.mAnswer,
-                                        memorea.mHint);
-                    }
-                } else {
-                    final Intent memoreaInfoIntent = MemoreaInfoActivity
-                            .getCallingIntent(this, memorea);
-                    startActivity(memoreaInfoIntent);
+        if (memorea.getTimeUntilNextAlarm(this) < 0 && !memorea.mCompleted) {
+            final Intent memorizeScreenIntent = MemorizeScreenActivity
+                    .getCallingIntent(this, memorea);
+            startActivity(memorizeScreenIntent);
+        } else {
+            if (mDualPane) {
+                if (mInfoFragmentStack.peek() instanceof MemoreaInfoFragment) {
+                    ((MemoreaInfoFragment) mInfoFragmentStack.peek())
+                            .updateFields(memorea.mTitle, memorea.mQuestion, memorea.mAnswer,
+                                    memorea.mHint);
                 }
+            } else {
+                final Intent memoreaInfoIntent = MemoreaInfoActivity
+                        .getCallingIntent(this, memorea);
+                startActivity(memoreaInfoIntent);
             }
         }
     }

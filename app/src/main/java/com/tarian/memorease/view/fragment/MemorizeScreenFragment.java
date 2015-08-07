@@ -53,7 +53,8 @@ public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScree
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         mSpaceBetweenButtons = (int)dpToPx(50);
         final View view = inflater.inflate(R.layout.fragment_memorize_screen, container, false);
         ((TextView)view.findViewById(R.id.text_view_question)).setText(mQuestion);
@@ -83,8 +84,10 @@ public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScree
     public void onSaveInstanceState(final Bundle savedInstanceState) {
         savedInstanceState.putBoolean(CIRCLE_VISIBLE, mCircleVisible);
         if (getView() != null) {
-            savedInstanceState.putString(mQuestion, ((TextView) getView().findViewById(R.id.text_view_question)).getText().toString());
-            savedInstanceState.putString(mHint, ((TextView) getView().findViewById(R.id.text_view_hint)).getText().toString());
+            savedInstanceState.putString(mQuestion, ((TextView) getView()
+                    .findViewById(R.id.text_view_question)).getText().toString());
+            savedInstanceState.putString(mHint, ((TextView) getView()
+                    .findViewById(R.id.text_view_hint)).getText().toString());
         }
 
         super.onSaveInstanceState(savedInstanceState);
@@ -96,17 +99,21 @@ public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScree
     public void giveHint() {
         if (getView() != null) {
             final AnimatorSet animationSet = new AnimatorSet();
-            animationSet.playTogether(createTranslationYAnimator(getView().findViewById(R.id.text_view_question), 0, 0 - getView().findViewById(R.id.text_view_hint).getHeight()),
+            animationSet.playTogether(createTranslationYAnimator(getView()
+                            .findViewById(R.id.text_view_question), 0,
+                            0 - getView().findViewById(R.id.text_view_hint).getHeight()),
                     createFadeAnimator(getView().findViewById(R.id.text_view_hint), 0, 1),
                     createFadeAnimator(getView().findViewById(R.id.button_hint), 1, 0),
-                    createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0, 0 - mSpaceBetweenButtons));
+                    createTranslationXAnimator(getView().findViewById(R.id.button_answer), 0,
+                            0 - mSpaceBetweenButtons));
             animationSet.start();
         }
     }
 
     private void removeHintButton(final View view) {
         view.findViewById(R.id.button_hint).setVisibility(View.GONE);
-        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)view.findViewById(R.id.button_answer).getLayoutParams();
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams)view
+                .findViewById(R.id.button_answer).getLayoutParams();
         layoutParams.setMargins(0, 0, 0, 0);
     }
 
@@ -121,16 +128,21 @@ public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScree
                 mCircleVisible = false;
                 final AnimatorSet animationSet = new AnimatorSet();
 
-                if (((TextView) view.findViewById(R.id.text_view_hint)).getText().toString().matches("")) {
+                if (((TextView) view.findViewById(R.id.text_view_hint)).getText().toString()
+                        .matches("")) {
                     removeHintButton(view);
-                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
+                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1,
+                                    0),
                             createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1));
                 } else {
-                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1, 0),
+                    animationSet.playTogether(createFadeAnimator(view.findViewById(R.id.circle), 1,
+                                    0),
                             createFadeAnimator(view.findViewById(R.id.button_answer), 0, 1),
                             createFadeAnimator(view.findViewById(R.id.button_hint), 0, 1),
-                            createTranslationXAnimator(view.findViewById(R.id.button_answer), 0 - mSpaceBetweenButtons, 0),
-                            createTranslationXAnimator(view.findViewById(R.id.button_hint), mSpaceBetweenButtons, 0));
+                            createTranslationXAnimator(view.findViewById(R.id.button_answer),
+                                    0 - mSpaceBetweenButtons, 0),
+                            createTranslationXAnimator(view.findViewById(R.id.button_hint),
+                                    mSpaceBetweenButtons, 0));
                 }
                 animationSet.start();
             }
@@ -148,7 +160,8 @@ public class MemorizeScreenFragment extends NucleusSupportFragment<MemorizeScree
     }
 
     private float dpToPx(final int dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 
     private static final String TRANSLATION_X = "translationX";

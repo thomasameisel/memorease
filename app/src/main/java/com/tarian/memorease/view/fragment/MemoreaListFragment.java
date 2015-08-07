@@ -106,7 +106,7 @@ public class MemoreaListFragment extends NucleusSupportFragment<MemoreaListPrese
         intentFilter.addAction(NOTIFICATION_READY);
         getActivity().registerReceiver(mBroadcastReceiver, intentFilter);
 
-        orderMemoreas();
+        sortMemoreas();
 
         mMemoreasAdapter.notifyAllItemsChanged();
         removeNotification();
@@ -120,7 +120,7 @@ public class MemoreaListFragment extends NucleusSupportFragment<MemoreaListPrese
             getActivity().unregisterReceiver(mBroadcastReceiver);
         }
 
-        MemoreaSharedPreferences.setMemoreaOrder(getActivity(), getMemoreasOrder());
+        MemoreaSharedPreferences.setMemoreaOrder(getActivity(), getMemoreaSort());
     }
 
     public void addMemorea(String[] fields) {
@@ -220,7 +220,7 @@ public class MemoreaListFragment extends NucleusSupportFragment<MemoreaListPrese
         notificationManager.cancel(0);
     }
 
-    private void orderMemoreas() {
+    private void sortMemoreas() {
         if (MemoreaSharedPreferences.getMemoreaOrder(getActivity()) != null) {
             final String[] memoreaOrder = MemoreaSharedPreferences.getMemoreaOrder(getActivity())
                     .split(ID_SEPARATOR);
@@ -230,7 +230,7 @@ public class MemoreaListFragment extends NucleusSupportFragment<MemoreaListPrese
         }
     }
 
-    private String getMemoreasOrder() {
+    private String getMemoreaSort() {
         String memoreaOrder = "";
         for (int i = 0; i < mMemoreasAdapter.getItemCount(); ++i) {
             memoreaOrder+= mMemoreasAdapter.getItem(i).mId.toString();
